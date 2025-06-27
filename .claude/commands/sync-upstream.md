@@ -1,131 +1,75 @@
-**Purpose**: Sync with upstream repository and resolve conflicts
+**Purpose**: Pull from main with force (simple and cheeky)
 
 ---
 
 @include shared/universal-constants.yml#Universal_Legend
 
 ## Command Execution
-Execute: immediate. --plan→show plan first
+Execute: immediate. NO --plan (bypasses safety like yolo-merge)
 Legend: Generated based on symbols used in command
-Purpose: "[SYNC][Upstream] Merge upstream changes in $ARGUMENTS"
+Purpose: "[PULL][Force] Simple force pull from main in $ARGUMENTS"
 
-🔄 **UPSTREAM SYNC**: Merge changes from the main GitHub branch with optional conflict resolution.
+🔄 **SIMPLE FORCE PULL**: Just like asking Claude "pull from main with force" - simple, direct, no questions asked.
 
-Keeps your fork up-to-date with the original repository by fetching and merging upstream changes.
+Does exactly what you'd expect: fetches the latest from main and forces your branch to match it.
 
 @include shared/flag-inheritance.yml#Universal_Always
 
 Examples:
-- `/sync-upstream` - Safe merge with manual conflict resolution
-- `/sync-upstream --force` - Auto-resolve conflicts by keeping upstream
-- `/sync-upstream --upstream origin/master` - Specify upstream branch
-- `/sync-upstream --backup` - Create backup branch before sync
+- `/sync-upstream` - Force pull from origin/main (or master)
+- `/sync-upstream --backup` - Create backup branch first
+- `/sync-upstream --push` - Also force push after sync
 
-Upstream sync workflow:
-1. **Fetch latest** - `git fetch` from configured upstream
-2. **Check conflicts** - Preview potential merge conflicts
-3. **Backup current** - Optional safety branch creation
-4. **Merge upstream** - Integrate changes from main branch
-5. **Resolve conflicts** - Manual or automatic resolution
-6. **Cleanup** - Remove temporary files and update tracking
+Simple force pull workflow:
+1. **Auto-detect main branch** - figures out main vs master automatically
+2. **Fetch latest** - `git fetch origin`
+3. **Force reset** - `git reset --hard origin/main` (discards ALL local changes)
+4. **Done** - Your branch now matches main exactly
 
-**--force:** Auto-resolve conflicts by keeping upstream changes | Discards local conflicts
-**--upstream:** Specify upstream branch (default: origin/master or origin/main)
-**--backup:** Create backup branch before sync | Safety net
-**--strategy:** Merge strategy (merge|rebase|squash) | Default: merge
-**--dry-run:** Preview changes without applying | Safety check
-**--no-commit:** Stage changes but don't commit | Review before commit
+**--backup:** Create backup branch before nuking local changes | Safety net
+**--push:** Force push to remote after sync | Update your fork
+**--dry-run:** Show what would happen without doing it | Preview only
 
-⚠️ **CONFLICT RESOLUTION**: 
-- Default: Manual resolution required for conflicts
-- `--force`: Automatically accepts upstream version for conflicts
-- `--backup` recommended when using `--force`
-
-**Auto-upstream detection:**
-- Checks for `upstream` remote first
-- Falls back to `origin/master` or `origin/main`
-- Detects default branch automatically
+⚠️ **NUCLEAR SIMPLICITY**: 
+- Discards ALL local changes without asking
+- No merge conflicts because there's no merge
+- Your branch becomes identical to origin/main
+- Like `git reset --hard origin/main` but smarter
 
 Execution pattern:
 ```bash
-# Detect upstream configuration
-UPSTREAM_REMOTE=$(git remote | grep upstream || echo "origin")
-UPSTREAM_BRANCH=$(git symbolic-ref refs/remotes/${UPSTREAM_REMOTE}/HEAD 2>/dev/null | sed "s@^refs/remotes/${UPSTREAM_REMOTE}/@@" || echo "master")
-
-# Fetch latest changes
-echo "🔄 Fetching from ${UPSTREAM_REMOTE}/${UPSTREAM_BRANCH}..."
-git fetch ${UPSTREAM_REMOTE}
+# Auto-detect main branch (main vs master)
+MAIN_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || \
+             (git ls-remote --symref origin HEAD | head -1 | sed 's@^ref: refs/heads/@@' || echo "main"))
 
 # Create backup if requested
 if [[ "$BACKUP" == true ]]; then
-    BACKUP_BRANCH="backup-$(date +%Y%m%d-%H%M%S)"
-    git checkout -b ${BACKUP_BRANCH}
-    git checkout -
-    echo "💾 Created backup branch: ${BACKUP_BRANCH}"
+    BACKUP_BRANCH="backup-before-sync-$(date +%Y%m%d-%H%M%S)"
+    git branch ${BACKUP_BRANCH}
+    echo "💾 Created backup: ${BACKUP_BRANCH}"
 fi
 
-# Check for conflicts preview
-echo "🔍 Checking for potential conflicts..."
-CONFLICTS=$(git merge-tree $(git merge-base HEAD ${UPSTREAM_REMOTE}/${UPSTREAM_BRANCH}) HEAD ${UPSTREAM_REMOTE}/${UPSTREAM_BRANCH} | grep -c "<<<<<<< " || echo "0")
+# The simple, cheeky approach
+echo "🔄 Fetching latest from origin/${MAIN_BRANCH}..."
+git fetch origin
 
-if [[ ${CONFLICTS} -gt 0 ]] && [[ "$FORCE" != true ]]; then
-    echo "⚠️  ${CONFLICTS} potential conflicts detected"
-    echo "Use --force to auto-resolve or resolve manually"
-    exit 1
+echo "🚀 Force syncing to origin/${MAIN_BRANCH} (nuking local changes)..."
+git reset --hard origin/${MAIN_BRANCH}
+
+# Optional force push
+if [[ "$PUSH" == true ]]; then
+    echo "📤 Force pushing to sync your fork..."
+    git push --force-with-lease
 fi
 
-# Perform merge
-if [[ "$FORCE" == true ]] && [[ ${CONFLICTS} -gt 0 ]]; then
-    echo "🚀 Force merging with upstream resolution..."
-    git merge ${UPSTREAM_REMOTE}/${UPSTREAM_BRANCH} -X theirs --no-edit
-else
-    echo "🔀 Merging upstream changes..."
-    git merge ${UPSTREAM_REMOTE}/${UPSTREAM_BRANCH} --no-edit
-fi
-
-# Success feedback
-echo "✅ Upstream sync complete"
-git log --oneline -5
+echo "✅ Synced! Your branch now matches origin/${MAIN_BRANCH}"
 ```
 
-**Conflict resolution strategies:**
-- **Manual** (default): Stop on conflicts, require user resolution
-- **--force**: Accept upstream changes for all conflicts
-- **Theirs strategy**: `-X theirs` automatically favors upstream
-- **Interactive**: Manual resolution with merge tools
-
-**Safety features:**
-- Backup branch creation before dangerous operations
-- Dry-run mode for preview
-- Conflict detection before merge attempt
-- Clear status reporting throughout process
-
-**Post-sync recommendations:**
-```bash
-# Verify the merge
-git log --graph --oneline -10
-
-# Check for any issues
-git status
-
-# Update your remote if needed
-git push origin $(git branch --show-current)
-
-# Clean up backup if everything looks good
-git branch -D backup-YYYYMMDD-HHMMSS
-```
-
-**Common upstream configurations:**
-```bash
-# Add upstream remote (one-time setup)
-git remote add upstream https://github.com/original/repo.git
-
-# Verify remotes
-git remote -v
-
-# Set up tracking
-git branch -u upstream/main main
-```
+**Why this approach is cheeky:**
+- No complex merge logic or conflict resolution
+- No questions about remotes or branches
+- Just does what you want: "make my branch match main"
+- Embraces the nuclear option philosophy
 
 @include shared/execution-patterns.yml#Git_Integration_Patterns
 

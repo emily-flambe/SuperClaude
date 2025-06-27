@@ -17,7 +17,7 @@ Commands: `/cmd --flags` | 22 total | Universal flags available
 ## Commands w/ Primary Flags
 **Dev**: `/build` --init|feature|react | `/dev-setup` --install|ci | `/test` --coverage|e2e
 **Analysis**: `/analyze` --code|arch | `/review` --files|commit|pr | `/troubleshoot` --fix|prod | `/improve` --perf|quality | `/explain` --depth
-**Ops**: `/deploy` --env|rollback | `/migrate` --dry-run | `/scan` --security | `/estimate` --detailed | `/cleanup` --all | `/git` --commit|sync | `/yolo-merge` --squash|force | `/abort` --save-work|force | `/sync-upstream` --force|backup
+**Ops**: `/deploy` --env|rollback | `/migrate` --dry-run | `/scan` --security | `/estimate` --detailed | `/cleanup` --all | `/git` --commit|sync | `/yolo-merge` --squash|force | `/abort` --save-work|force | `/sync-upstream` --backup|push
 **Design**: `/design` --api|ddd | `/document` --api|user | `/spawn` --task
 **Manage**: `/task` --create|status | `/load` --context
 ## Workflow Patterns

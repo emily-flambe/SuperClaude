@@ -50,18 +50,18 @@ Where the original SuperClaude is all about safety, validation, and proper engin
 - Admitting defeat gracefully with proper documentation
 - Breaking out of unproductive loops
 
-#### 🔄 `/sync-upstream` Command - *The Fork Refresher*
-**What it does:** Merges changes from the main GitHub branch with optional conflict resolution.
+#### 🔄 `/sync-upstream` Command - *The Simple Force Pull*
+**What it does:** Just like asking Claude "pull from main with force" - fetches latest and forces your branch to match main exactly.
 
-**Why it's cheeky:** Most fork management is tedious manual work. This command acknowledges that sometimes you just want to pull in upstream changes and let the computer figure out conflicts, even if it means losing some local work.
+**Why it's cheeky:** Skips all the complex merge logic and conflict resolution. No questions about remotes or branches. It just nukes your local changes and makes your branch identical to origin/main. Because sometimes "make it match main" is all you want.
 
-**The `--force` flag:** Automatically resolves conflicts by keeping upstream changes and discarding local modifications. Because sometimes staying current is more important than preserving that hacky workaround you wrote at 2 AM.
+**Nuclear simplicity:** Uses `git reset --hard origin/main` approach - no merge conflicts because there's no merge. Your branch becomes identical to main, period.
 
 **Perfect for:**
-- Keeping your cheeky fork up-to-date with improvements
-- When upstream has security fixes you need immediately
-- Lazy maintenance of personal forks
-- "I trust the upstream more than my changes" situations
+- "Just make my branch match main, I don't care about local changes"
+- When you trust main more than your experimental modifications
+- Simple fork maintenance without merge headaches
+- Emergency sync when you need to be current immediately
 
 ### Modified: Documentation Attitude
 

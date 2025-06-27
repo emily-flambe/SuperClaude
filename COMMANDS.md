@@ -397,25 +397,22 @@ Emergency session abort with documentation and cleanup when stuck in unproductiv
 
 **⚠️ DESTRUCTIVE:** Reverts ALL uncommitted changes by default. Documents findings in TROUBLESHOOTING.md and provides clean session exit when you're going in circles.
 
-#### `/sync-upstream` - Upstream Repository Sync
-Merge changes from the main GitHub branch with optional conflict resolution.
+#### `/sync-upstream` - Simple Force Pull from Main
+Just like asking Claude "pull from main with force" - simple, direct, no questions asked.
 
 **Command-Specific Flags:**
-- `--force` - Auto-resolve conflicts by keeping upstream changes
-- `--upstream` - Specify upstream branch (default: origin/master or origin/main)
-- `--backup` - Create backup branch before sync
-- `--strategy` - Merge strategy (merge|rebase|squash)
-- `--dry-run` - Preview changes without applying
-- `--no-commit` - Stage changes but don't commit
+- `--backup` - Create backup branch before nuking local changes
+- `--push` - Also force push to remote after sync
+- `--dry-run` - Preview what would happen without doing it
 
 **Examples:**
 ```bash
-/sync-upstream                              # Safe merge with manual conflict resolution
-/sync-upstream --force --backup             # Auto-resolve conflicts with backup
-/sync-upstream --upstream origin/develop    # Sync from specific branch
+/sync-upstream                              # Force pull from origin/main (nukes local changes)
+/sync-upstream --backup                     # Create backup branch first
+/sync-upstream --backup --push              # Backup, sync, and update your fork
 ```
 
-**⚠️ CONFLICT RESOLUTION:** `--force` automatically accepts upstream version for all conflicts, discarding local changes. Use `--backup` for safety.
+**⚠️ NUCLEAR SIMPLICITY:** Uses `git reset --hard origin/main` - discards ALL local changes without asking. No merge conflicts because there's no merge.
 
 ### 🎨 Design & Architecture Commands (1)
 
