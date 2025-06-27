@@ -63,6 +63,13 @@ Where the original SuperClaude is all about safety, validation, and proper engin
 - Because sometimes you need to know if your error handling actually works
 - Controlled chaos for the brave
 
+#### `/abort` Command - *The Nuclear Option* 🛑
+*Emergency session exit with documentation*
+- For when you're stuck in unproductive loops
+- Documents what you tried in TROUBLESHOOTING.md
+- Reverts changes and provides clean slate
+- Because sometimes you need to admit defeat gracefully
+
 #### `/rubber-duck` Command  
 *AI-powered rubber duck debugging*
 - For when you need someone to listen to your problems

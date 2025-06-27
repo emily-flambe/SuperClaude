@@ -249,7 +249,7 @@ Generate comprehensive explanations and documentation.
 /explain --api --examples --c7             # API docs with examples
 ```
 
-### ⚙️ Operations Commands (7)
+### ⚙️ Operations Commands (8)
 
 #### `/deploy` - Application Deployment
 Safe deployment with rollback capabilities.
@@ -377,6 +377,25 @@ Automatic commit, PR creation, and merge without approval or safety checks.
 ```
 
 **⚠️ WARNING:** This command bypasses ALL safety checks, approval processes, and conflict resolution. Use only for personal repositories or emergency deployments where normal git workflows are unnecessary.
+
+#### `/abort` - Emergency Session Exit (🛑 NUCLEAR OPTION)
+Emergency session abort with documentation and cleanup when stuck in unproductive loops.
+
+**Command-Specific Flags:**
+- `--save-work` - Stash changes instead of reverting them
+- `--no-revert` - Document findings but keep current changes
+- `--force` - Skip confirmation prompt for emergency abort
+- `--detailed` - Include full git diff in documentation
+- `--issue` - Create GitHub issue from findings
+
+**Examples:**
+```bash
+/abort "stuck debugging infinite API loop"    # Document and clean exit
+/abort --save-work --detailed                # Preserve work with full docs
+/abort --force --no-revert                   # Emergency doc-only abort
+```
+
+**⚠️ DESTRUCTIVE:** Reverts ALL uncommitted changes by default. Documents findings in TROUBLESHOOTING.md and provides clean session exit when you're going in circles.
 
 ### 🎨 Design & Architecture Commands (1)
 
