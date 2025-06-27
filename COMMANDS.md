@@ -397,22 +397,22 @@ Emergency session abort with documentation and cleanup when stuck in unproductiv
 
 **⚠️ DESTRUCTIVE:** Reverts ALL uncommitted changes by default. Documents findings in TROUBLESHOOTING.md and provides clean session exit when you're going in circles.
 
-#### `/sync-upstream` - Simple Force Pull from Main
-Just like asking Claude "pull from main with force" - simple, direct, no questions asked.
+#### `/sync-upstream` - Merge Main into Current Branch
+Just like asking Claude "pull from main with force" - merges main into whatever branch you're on.
 
 **Command-Specific Flags:**
-- `--backup` - Create backup branch before nuking local changes
-- `--push` - Also force push to remote after sync
-- `--dry-run` - Preview what would happen without doing it
+- `--force` - Auto-resolve conflicts by keeping main's version
+- `--backup` - Create backup branch before merge
+- `--push` - Push the merged branch after successful merge
 
 **Examples:**
 ```bash
-/sync-upstream                              # Force pull from origin/main (nukes local changes)
-/sync-upstream --backup                     # Create backup branch first
-/sync-upstream --backup --push              # Backup, sync, and update your fork
+/sync-upstream                              # Merge main into current branch
+/sync-upstream --force                      # Auto-resolve conflicts, main wins
+/sync-upstream --backup --push              # Backup, merge, and push result
 ```
 
-**⚠️ NUCLEAR SIMPLICITY:** Uses `git reset --hard origin/main` - discards ALL local changes without asking. No merge conflicts because there's no merge.
+**⚠️ CONFLICT HANDLING:** `--force` auto-resolves conflicts by keeping main's version. Keeps all your non-conflicting changes.
 
 ### 🎨 Design & Architecture Commands (1)
 

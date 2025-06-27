@@ -9,32 +9,32 @@ Execute: immediate. NO --plan (bypasses safety like yolo-merge)
 Legend: Generated based on symbols used in command
 Purpose: "[PULL][Force] Simple force pull from main in $ARGUMENTS"
 
-🔄 **SIMPLE FORCE PULL**: Just like asking Claude "pull from main with force" - simple, direct, no questions asked.
+🔄 **SIMPLE MERGE FROM MAIN**: Just like asking Claude "pull from main with force" - merges main into your current branch.
 
-Does exactly what you'd expect: fetches the latest from main and forces your branch to match it.
+Does exactly what you'd expect: fetches the latest from main and merges it into whatever branch you're on.
 
 @include shared/flag-inheritance.yml#Universal_Always
 
 Examples:
-- `/sync-upstream` - Force pull from origin/main (or master)
+- `/sync-upstream` - Merge main into current branch
+- `/sync-upstream --force` - Auto-resolve conflicts by keeping main's version
 - `/sync-upstream --backup` - Create backup branch first
-- `/sync-upstream --push` - Also force push after sync
 
-Simple force pull workflow:
+Simple merge from main workflow:
 1. **Auto-detect main branch** - figures out main vs master automatically
 2. **Fetch latest** - `git fetch origin`
-3. **Force reset** - `git reset --hard origin/main` (discards ALL local changes)
-4. **Done** - Your branch now matches main exactly
+3. **Merge main** - `git merge origin/main` into your current branch
+4. **Handle conflicts** - either manually or with --force
 
-**--backup:** Create backup branch before nuking local changes | Safety net
-**--push:** Force push to remote after sync | Update your fork
-**--dry-run:** Show what would happen without doing it | Preview only
+**--force:** Auto-resolve conflicts by keeping main's changes | Discards your conflicting changes
+**--backup:** Create backup branch before merge | Safety net
+**--push:** Push the merged branch after successful merge | Update your fork
 
-⚠️ **NUCLEAR SIMPLICITY**: 
-- Discards ALL local changes without asking
-- No merge conflicts because there's no merge
-- Your branch becomes identical to origin/main
-- Like `git reset --hard origin/main` but smarter
+⚠️ **CONFLICT HANDLING**: 
+- Default: Stops on conflicts for manual resolution
+- `--force`: Auto-resolves by keeping main's version of conflicted files
+- Keeps all your non-conflicting changes
+- Like `git merge origin/main -X theirs` when forced
 
 Execution pattern:
 ```bash
@@ -53,23 +53,29 @@ fi
 echo "🔄 Fetching latest from origin/${MAIN_BRANCH}..."
 git fetch origin
 
-echo "🚀 Force syncing to origin/${MAIN_BRANCH} (nuking local changes)..."
-git reset --hard origin/${MAIN_BRANCH}
-
-# Optional force push
-if [[ "$PUSH" == true ]]; then
-    echo "📤 Force pushing to sync your fork..."
-    git push --force-with-lease
+echo "🔀 Merging origin/${MAIN_BRANCH} into $(git branch --show-current)..."
+if [[ "$FORCE" == true ]]; then
+    # Auto-resolve conflicts by keeping main's version
+    git merge origin/${MAIN_BRANCH} -X theirs --no-edit
+else
+    # Normal merge that may have conflicts
+    git merge origin/${MAIN_BRANCH} --no-edit
 fi
 
-echo "✅ Synced! Your branch now matches origin/${MAIN_BRANCH}"
+# Optional push after successful merge
+if [[ "$PUSH" == true ]]; then
+    echo "📤 Pushing merged branch..."
+    git push
+fi
+
+echo "✅ Merged origin/${MAIN_BRANCH} into $(git branch --show-current)"
 ```
 
 **Why this approach is cheeky:**
-- No complex merge logic or conflict resolution
-- No questions about remotes or branches
-- Just does what you want: "make my branch match main"
-- Embraces the nuclear option philosophy
+- No questions about remotes or which branch to merge
+- Auto-detects main vs master
+- `--force` just says "main wins" for conflicts
+- Simple merge, keeps your changes where possible
 
 @include shared/execution-patterns.yml#Git_Integration_Patterns
 

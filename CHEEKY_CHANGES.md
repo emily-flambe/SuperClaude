@@ -50,18 +50,18 @@ Where the original SuperClaude is all about safety, validation, and proper engin
 - Admitting defeat gracefully with proper documentation
 - Breaking out of unproductive loops
 
-#### 🔄 `/sync-upstream` Command - *The Simple Force Pull*
-**What it does:** Just like asking Claude "pull from main with force" - fetches latest and forces your branch to match main exactly.
+#### 🔄 `/sync-upstream` Command - *The Simple Merge from Main*
+**What it does:** Just like asking Claude "pull from main with force" - merges main into whatever branch you're currently on.
 
-**Why it's cheeky:** Skips all the complex merge logic and conflict resolution. No questions about remotes or branches. It just nukes your local changes and makes your branch identical to origin/main. Because sometimes "make it match main" is all you want.
+**Why it's cheeky:** No questions about which remote or branch to use. Just auto-detects main vs master and merges it into your current branch. The `--force` flag says "main wins" for any conflicts, keeping your non-conflicting changes.
 
-**Nuclear simplicity:** Uses `git reset --hard origin/main` approach - no merge conflicts because there's no merge. Your branch becomes identical to main, period.
+**Smart merge:** Uses `git merge origin/main` to bring in changes while preserving your branch's unique commits. Conflicts resolved automatically with `--force` or manually without it.
 
 **Perfect for:**
-- "Just make my branch match main, I don't care about local changes"
-- When you trust main more than your experimental modifications
-- Simple fork maintenance without merge headaches
-- Emergency sync when you need to be current immediately
+- "Pull in the latest from main into my feature branch"
+- Keeping your branch current without losing your work
+- Quick conflict resolution when you trust main's changes
+- Simple branch maintenance without complex git commands
 
 ### Modified: Documentation Attitude
 
