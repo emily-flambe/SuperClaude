@@ -63,6 +63,19 @@ Where the original SuperClaude is all about safety, validation, and proper engin
 - Quick conflict resolution when you trust main's changes
 - Simple branch maintenance without complex git commands
 
+#### 🔧 `/make-make` Command - *The Workflow Automator*
+**What it does:** Analyzes your project and generates a comprehensive Makefile with shell scripts for all common developer workflows.
+
+**Why it's cheeky:** Most projects have complex setup procedures that everyone forgets. This command says "let the computer figure out your workflows and automate them" by analyzing your codebase patterns and creating simple `make` commands for everything.
+
+**Smart automation:** Reviews package.json, Docker files, deployment configs, etc. and creates scripts for setup, development, testing, deployment, and maintenance. No more "how do I run this again?"
+
+**Perfect for:**
+- "I'm tired of remembering 12 different commands to set up this project"
+- Standardizing workflows across team members
+- Making onboarding new developers trivial
+- When you want `make dev` to just work, every time
+
 ### Modified: Documentation Attitude
 
 #### 📝 Command Documentation Style
@@ -141,6 +154,7 @@ This fork maintains deep respect for the original SuperClaude project. We're not
 
 - **Safety checks bypassed:** Countless (by design)
 - **Nuclear options deployed:** 3 (/yolo-merge, /abort, /pull-main --force)
+- **Workflow automation deployed:** 1 (/make-make)
 - **Coffee consumed during development:** Yes
 - **Regrettable commits prevented:** 0 (that's not our job)
 - **Sessions gracefully aborted:** Available on demand

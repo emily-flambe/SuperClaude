@@ -96,7 +96,7 @@ All personas are now integrated as flags, available on every command:
 
 ## Complete Command Reference
 
-### 🛠️ Development Commands (3)
+### 🛠️ Development Commands (4)
 
 #### `/build` - Universal Project Builder
 Build projects, features, and components using modern stack templates.
@@ -153,6 +153,24 @@ Create, run, and maintain testing strategies across the stack.
 ```bash
 /test --coverage --e2e --pup               # Full test suite
 /test --mutation --strict                  # Test quality validation
+```
+
+#### `/make-make` - Makefile and Script Generator
+Generate comprehensive Makefile with shell scripts for project workflow automation.
+
+**Command-Specific Flags:**
+- `--docker` - Include Docker build, run, and deployment commands
+- `--ci` - Add CI/CD pipeline commands for automation
+- `--env` - Include environment setup and configuration commands
+- `--deploy` - Add deployment commands for various targets
+- `--overwrite` - Replace existing Makefile without confirmation
+- `--test-all` - Include comprehensive testing commands
+
+**Examples:**
+```bash
+/make-make                                  # Generate Makefile for current project
+/make-make --docker --ci                    # Include Docker and CI commands
+/make-make --overwrite --deploy             # Replace existing with deployment focus
 ```
 
 ### 🔍 Analysis & Improvement Commands (5)
