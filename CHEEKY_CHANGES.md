@@ -35,6 +35,21 @@ Where the original SuperClaude is all about safety, validation, and proper engin
 - Late-night coding sessions with questionable judgment
 - Emergency hotfixes when the building is metaphorically on fire
 
+#### 🛑 `/abort` Command - *The Nuclear Option*
+**What it does:** Emergency session exit with documentation when you're stuck in unproductive loops.
+
+**Why it's cheeky:** Most development tools expect you to figure your way out of problems. This fork acknowledges that sometimes the best solution is to admit defeat, document what didn't work, and start fresh.
+
+**The confirmation prompt:** 
+> "It's clear this session isn't working out. We are going in circles. Document your findings in TROUBLESHOOTING.md (appending if the file already exists) to note what you have tried so far and what you have been seeing as a result. Then revert all changes since the last github commit and close this session."
+
+**Perfect for:**
+- When you've tried the same failing approach 5 times
+- Debugging sessions that have gone off the rails
+- Late-night coding when your judgment is questionable
+- Admitting defeat gracefully with proper documentation
+- Breaking out of unproductive loops
+
 ### Modified: Documentation Attitude
 
 #### 📝 Command Documentation Style
@@ -63,12 +78,6 @@ Where the original SuperClaude is all about safety, validation, and proper engin
 - Because sometimes you need to know if your error handling actually works
 - Controlled chaos for the brave
 
-#### `/abort` Command - *The Nuclear Option* 🛑
-*Emergency session exit with documentation*
-- For when you're stuck in unproductive loops
-- Documents what you tried in TROUBLESHOOTING.md
-- Reverts changes and provides clean slate
-- Because sometimes you need to admit defeat gracefully
 
 #### `/rubber-duck` Command  
 *AI-powered rubber duck debugging*
@@ -118,8 +127,10 @@ This fork maintains deep respect for the original SuperClaude project. We're not
 ## 📊 Cheeky Statistics
 
 - **Safety checks bypassed:** Countless (by design)
+- **Nuclear options deployed:** 2 (/yolo-merge, /abort)
 - **Coffee consumed during development:** Yes
 - **Regrettable commits prevented:** 0 (that's not our job)
+- **Sessions gracefully aborted:** Available on demand
 - **Fun factor increase:** Immeasurable
 - **Professional responsibility maintained:** Surprisingly high
 

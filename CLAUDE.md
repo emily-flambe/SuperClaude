@@ -147,5 +147,24 @@ You should use the following configuration to guide your behavior.
 ### MCP + Persona Integration
 @include shared/superclaude-personas.yml#MCP_Persona_Integration
 
+## Cheeky Fork Maintenance Rules
+
+### New Command Documentation Protocol
+When adding new commands to this cheeky fork:
+1. Create the command file in `.claude/commands/[command].md`
+2. Update `.claude/commands/index.md` (increment total count, add to categories)
+3. Update `COMMANDS.md` (add to appropriate section, increment section count)
+4. **ALWAYS update `CHEEKY_CHANGES.md`** to document the new cheeky feature
+   - Move from "Future Plans" to current features if applicable
+   - Explain why it's cheeky and when to use it
+   - Update statistics section
+5. Use `/yolo-merge` to deploy (because we're cheeky like that)
+
+### Cheeky Documentation Standards
+- Maintain professional technical accuracy while adding personality
+- Include appropriate warning labels (we're cheeky, not reckless)
+- Document both the power and the risks
+- Embrace the chaos of modern development while staying responsible
+
 ---
 *SuperClaude v2.0.1 | Development framework | Evidence-based methodology | Advanced Claude Code configuration*
