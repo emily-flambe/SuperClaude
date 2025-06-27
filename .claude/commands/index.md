@@ -3,7 +3,7 @@
 @include shared/universal-constants.yml#Universal_Legend
 
 ## Ultra-Compressed Reference
-Commands: `/cmd --flags` | 19 total | Universal flags available
+Commands: `/cmd --flags` | 20 total | Universal flags available
 
 @include shared/flag-inheritance.yml#Universal_Always
 
@@ -12,12 +12,12 @@ Commands: `/cmd --flags` | 19 total | Universal flags available
 **Build**: `/build` `/deploy` `/migrate` 
 **Manage**: `/task` `/load` `/cleanup`
 **Dev**: `/test` `/troubleshoot` `/improve`
-**Utils**: `/design` `/document` `/estimate` `/dev-setup` `/git` `/spawn`
+**Utils**: `/design` `/document` `/estimate` `/dev-setup` `/git` `/yolo-merge` `/spawn`
 
 ## Commands w/ Primary Flags
 **Dev**: `/build` --init|feature|react | `/dev-setup` --install|ci | `/test` --coverage|e2e
 **Analysis**: `/analyze` --code|arch | `/review` --files|commit|pr | `/troubleshoot` --fix|prod | `/improve` --perf|quality | `/explain` --depth
-**Ops**: `/deploy` --env|rollback | `/migrate` --dry-run | `/scan` --security | `/estimate` --detailed | `/cleanup` --all | `/git` --commit|sync
+**Ops**: `/deploy` --env|rollback | `/migrate` --dry-run | `/scan` --security | `/estimate` --detailed | `/cleanup` --all | `/git` --commit|sync | `/yolo-merge` --squash|force
 **Design**: `/design` --api|ddd | `/document` --api|user | `/spawn` --task
 **Manage**: `/task` --create|status | `/load` --context
 ## Workflow Patterns

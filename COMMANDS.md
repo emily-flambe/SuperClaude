@@ -249,7 +249,7 @@ Generate comprehensive explanations and documentation.
 /explain --api --examples --c7             # API docs with examples
 ```
 
-### ⚙️ Operations Commands (6)
+### ⚙️ Operations Commands (7)
 
 #### `/deploy` - Application Deployment
 Safe deployment with rollback capabilities.
@@ -357,6 +357,26 @@ Professional Git operations with safety features.
 /git --checkpoint "before refactor"       # Safety checkpoint
 /git --commit --validate --test          # Safe commit
 ```
+
+#### `/yolo-merge` - YOLO Merge (⚠️ DANGER)
+Automatic commit, PR creation, and merge without approval or safety checks.
+
+**Command-Specific Flags:**
+- `--branch` - Specify source branch (default: current)
+- `--target` - Target branch for merge (default: main/master)
+- `--message` - Custom commit message (default: auto-generated)
+- `--squash` - Squash commits before merge
+- `--delete-branch` - Delete source branch after merge
+- `--force` - Force push changes, overwrite conflicts
+
+**Examples:**
+```bash
+/yolo-merge "implement user auth"         # Auto-commit and merge
+/yolo-merge --squash --delete-branch      # Clean merge with cleanup
+/yolo-merge --target develop --force      # Force merge to develop
+```
+
+**⚠️ WARNING:** This command bypasses ALL safety checks, approval processes, and conflict resolution. Use only for personal repositories or emergency deployments where normal git workflows are unnecessary.
 
 ### 🎨 Design & Architecture Commands (1)
 
