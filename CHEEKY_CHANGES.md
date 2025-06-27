@@ -73,6 +73,19 @@ Where the original SuperClaude is all about safety, validation, and proper engin
 
 ### Potential Additions Under Consideration
 
+#### 🔄 `/sync-upstream` Command - *The Fork Refresher*
+**What it does:** Merges changes from the main GitHub branch with optional conflict resolution.
+
+**Why it's cheeky:** Most fork management is tedious manual work. This command acknowledges that sometimes you just want to pull in upstream changes and let the computer figure out conflicts, even if it means losing some local work.
+
+**The `--force` flag:** Automatically resolves conflicts by keeping upstream changes and discarding local modifications. Because sometimes staying current is more important than preserving that hacky workaround you wrote at 2 AM.
+
+**Perfect for:**
+- Keeping your cheeky fork up-to-date with improvements
+- When upstream has security fixes you need immediately
+- Lazy maintenance of personal forks
+- "I trust the upstream more than my changes" situations
+
 #### `/chaos-monkey` Command
 *Randomly introduce small bugs to test your monitoring*
 - Because sometimes you need to know if your error handling actually works
@@ -127,7 +140,7 @@ This fork maintains deep respect for the original SuperClaude project. We're not
 ## 📊 Cheeky Statistics
 
 - **Safety checks bypassed:** Countless (by design)
-- **Nuclear options deployed:** 2 (/yolo-merge, /abort)
+- **Nuclear options deployed:** 3 (/yolo-merge, /abort, /sync-upstream --force)
 - **Coffee consumed during development:** Yes
 - **Regrettable commits prevented:** 0 (that's not our job)
 - **Sessions gracefully aborted:** Available on demand

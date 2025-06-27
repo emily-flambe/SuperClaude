@@ -249,7 +249,7 @@ Generate comprehensive explanations and documentation.
 /explain --api --examples --c7             # API docs with examples
 ```
 
-### ⚙️ Operations Commands (8)
+### ⚙️ Operations Commands (9)
 
 #### `/deploy` - Application Deployment
 Safe deployment with rollback capabilities.
@@ -396,6 +396,26 @@ Emergency session abort with documentation and cleanup when stuck in unproductiv
 ```
 
 **⚠️ DESTRUCTIVE:** Reverts ALL uncommitted changes by default. Documents findings in TROUBLESHOOTING.md and provides clean session exit when you're going in circles.
+
+#### `/sync-upstream` - Upstream Repository Sync
+Merge changes from the main GitHub branch with optional conflict resolution.
+
+**Command-Specific Flags:**
+- `--force` - Auto-resolve conflicts by keeping upstream changes
+- `--upstream` - Specify upstream branch (default: origin/master or origin/main)
+- `--backup` - Create backup branch before sync
+- `--strategy` - Merge strategy (merge|rebase|squash)
+- `--dry-run` - Preview changes without applying
+- `--no-commit` - Stage changes but don't commit
+
+**Examples:**
+```bash
+/sync-upstream                              # Safe merge with manual conflict resolution
+/sync-upstream --force --backup             # Auto-resolve conflicts with backup
+/sync-upstream --upstream origin/develop    # Sync from specific branch
+```
+
+**⚠️ CONFLICT RESOLUTION:** `--force` automatically accepts upstream version for all conflicts, discarding local changes. Use `--backup` for safety.
 
 ### 🎨 Design & Architecture Commands (1)
 
