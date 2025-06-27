@@ -397,7 +397,7 @@ Emergency session abort with documentation and cleanup when stuck in unproductiv
 
 **⚠️ DESTRUCTIVE:** Reverts ALL uncommitted changes by default. Documents findings in TROUBLESHOOTING.md and provides clean session exit when you're going in circles.
 
-#### `/sync-upstream` - Merge Main into Current Branch
+#### `/pull-main` - Pull Main into Current Branch
 Just like asking Claude "pull from main with force" - merges main into whatever branch you're on.
 
 **Command-Specific Flags:**
@@ -407,9 +407,9 @@ Just like asking Claude "pull from main with force" - merges main into whatever 
 
 **Examples:**
 ```bash
-/sync-upstream                              # Merge main into current branch
-/sync-upstream --force                      # Auto-resolve conflicts, main wins
-/sync-upstream --backup --push              # Backup, merge, and push result
+/pull-main                                  # Merge main into current branch
+/pull-main --force                          # Auto-resolve conflicts, main wins
+/pull-main --backup --push                  # Backup, merge, and push result
 ```
 
 **⚠️ CONFLICT HANDLING:** `--force` auto-resolves conflicts by keeping main's version. Keeps all your non-conflicting changes.

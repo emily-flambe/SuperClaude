@@ -50,12 +50,12 @@ Where the original SuperClaude is all about safety, validation, and proper engin
 - Admitting defeat gracefully with proper documentation
 - Breaking out of unproductive loops
 
-#### 🔄 `/sync-upstream` Command - *The Simple Merge from Main*
+#### 🔄 `/pull-main` Command - *The Simple Main Merge*
 **What it does:** Just like asking Claude "pull from main with force" - merges main into whatever branch you're currently on.
 
 **Why it's cheeky:** No questions about which remote or branch to use. Just auto-detects main vs master and merges it into your current branch. The `--force` flag says "main wins" for any conflicts, keeping your non-conflicting changes.
 
-**Smart merge:** Uses `git merge origin/main` to bring in changes while preserving your branch's unique commits. Conflicts resolved automatically with `--force` or manually without it.
+**Crystal clear naming:** Unlike confusing "sync-upstream", `/pull-main` tells you exactly what it does - pulls main into your current branch.
 
 **Perfect for:**
 - "Pull in the latest from main into my feature branch"
@@ -140,7 +140,7 @@ This fork maintains deep respect for the original SuperClaude project. We're not
 ## 📊 Cheeky Statistics
 
 - **Safety checks bypassed:** Countless (by design)
-- **Nuclear options deployed:** 3 (/yolo-merge, /abort, /sync-upstream --force)
+- **Nuclear options deployed:** 3 (/yolo-merge, /abort, /pull-main --force)
 - **Coffee consumed during development:** Yes
 - **Regrettable commits prevented:** 0 (that's not our job)
 - **Sessions gracefully aborted:** Available on demand
