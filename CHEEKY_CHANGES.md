@@ -50,6 +50,19 @@ Where the original SuperClaude is all about safety, validation, and proper engin
 - Admitting defeat gracefully with proper documentation
 - Breaking out of unproductive loops
 
+#### 🔄 `/sync-upstream` Command - *The Fork Refresher*
+**What it does:** Merges changes from the main GitHub branch with optional conflict resolution.
+
+**Why it's cheeky:** Most fork management is tedious manual work. This command acknowledges that sometimes you just want to pull in upstream changes and let the computer figure out conflicts, even if it means losing some local work.
+
+**The `--force` flag:** Automatically resolves conflicts by keeping upstream changes and discarding local modifications. Because sometimes staying current is more important than preserving that hacky workaround you wrote at 2 AM.
+
+**Perfect for:**
+- Keeping your cheeky fork up-to-date with improvements
+- When upstream has security fixes you need immediately
+- Lazy maintenance of personal forks
+- "I trust the upstream more than my changes" situations
+
 ### Modified: Documentation Attitude
 
 #### 📝 Command Documentation Style
@@ -72,19 +85,6 @@ Where the original SuperClaude is all about safety, validation, and proper engin
 ## 🔮 Future Cheeky Plans
 
 ### Potential Additions Under Consideration
-
-#### 🔄 `/sync-upstream` Command - *The Fork Refresher*
-**What it does:** Merges changes from the main GitHub branch with optional conflict resolution.
-
-**Why it's cheeky:** Most fork management is tedious manual work. This command acknowledges that sometimes you just want to pull in upstream changes and let the computer figure out conflicts, even if it means losing some local work.
-
-**The `--force` flag:** Automatically resolves conflicts by keeping upstream changes and discarding local modifications. Because sometimes staying current is more important than preserving that hacky workaround you wrote at 2 AM.
-
-**Perfect for:**
-- Keeping your cheeky fork up-to-date with improvements
-- When upstream has security fixes you need immediately
-- Lazy maintenance of personal forks
-- "I trust the upstream more than my changes" situations
 
 #### `/chaos-monkey` Command
 *Randomly introduce small bugs to test your monitoring*
