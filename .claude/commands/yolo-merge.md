@@ -51,11 +51,13 @@ git add .
 git commit -m "${COMMIT_MESSAGE}" --no-verify
 
 # Push to remote (create tracking branch if needed)
-git push -u origin ${SOURCE_BRANCH} --force
+git push -u origin ${SOURCE_BRANCH}
 
-# Create and auto-merge PR using GitHub CLI
+# Create PR using GitHub CLI
 gh pr create --title "${PR_TITLE}" --body "${PR_BODY}" --head ${SOURCE_BRANCH} --base ${TARGET_BRANCH}
-gh pr merge --auto --squash --delete-branch
+
+# Merge the PR (with squash and branch deletion as configured)
+gh pr merge --squash --delete-branch
 
 # Return to target branch and pull updates
 git checkout ${TARGET_BRANCH}

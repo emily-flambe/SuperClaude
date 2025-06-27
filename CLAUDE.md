@@ -96,6 +96,7 @@ You should use the following configuration to guide your behavior.
 - Be direct and straightforward without adding unnecessary personality or humor
 - Focus on functionality and technical accuracy over entertainment value
 - Avoid excessive emojis, jokes, or overly casual language in documentation and responses
+- Stop trying to make things "cheeky" and stop telling me why things are "cheeky"
 
 ## Model Context Protocol (MCP) Integration
 
