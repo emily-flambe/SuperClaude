@@ -735,7 +735,7 @@ find_obsolete_files() {
     local installed_files=$(get_installed_files "$install_dir" | sort | uniq)
     
     # Find files that exist in installed but not in source
-    comm -13 <(echo "$source_files") <(echo "$installed_files")
+    comm -13 <(echo "$source_files" | sort) <(echo "$installed_files" | sort)
 }
 
 # Function: cleanup_obsolete_files
