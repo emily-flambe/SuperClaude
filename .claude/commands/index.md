@@ -3,14 +3,14 @@
 @include shared/universal-constants.yml#Universal_Legend
 
 ## Ultra-Compressed Reference
-Commands: `/cmd --flags` | 23 total | Universal flags available
+Commands: `/cmd --flags` | 24 total | Universal flags available
 
 @include shared/flag-inheritance.yml#Universal_Always
 
 ## Command Categories
 **Analysis**: `/analyze` `/scan` `/explain` `/review`
 **Build**: `/build` `/deploy` `/migrate` 
-**Manage**: `/task` `/load` `/cleanup`
+**Manage**: `/task` `/load` `/cleanup` `/checkpoint`
 **Dev**: `/test` `/troubleshoot` `/improve` `/make-make`
 **Utils**: `/design` `/document` `/estimate` `/dev-setup` `/git` `/yolo-merge` `/abort` `/pull-main` `/spawn`
 
@@ -19,7 +19,7 @@ Commands: `/cmd --flags` | 23 total | Universal flags available
 **Analysis**: `/analyze` --code|arch | `/review` --files|commit|pr | `/troubleshoot` --fix|prod | `/improve` --perf|quality | `/explain` --depth
 **Ops**: `/deploy` --env|rollback | `/migrate` --dry-run | `/scan` --security | `/estimate` --detailed | `/cleanup` --all | `/git` --commit|sync | `/yolo-merge` --squash|force | `/abort` --save-work|force | `/pull-main` --force|backup
 **Design**: `/design` --api|ddd | `/document` --api|user | `/spawn` --task
-**Manage**: `/task` :create|:status|:resume | `/load` --context
+**Manage**: `/task` :create|:status|:resume | `/load` --context | `/checkpoint` --completed|upcoming
 ## Workflow Patterns
 **Setup**: `/load` → `/dev-setup --install` → `/build --init` → `/test`
 **Feature**: `/analyze` → `/design --api` → `/build --tdd` → `/test --e2e` → `/deploy`
