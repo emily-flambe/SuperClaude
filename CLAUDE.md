@@ -161,8 +161,19 @@ When adding new commands:
 1. Create the command file in `.claude/commands/[command].md`
 2. Update `.claude/commands/index.md` (increment total count, add to categories)
 3. Update `COMMANDS.md` (add to appropriate section, increment section count)
-4. Update changelog documentation as needed
-5. Test thoroughly before deployment
+4. **ALWAYS update `FORK_CHANGES.md`** with the new command details, features, and commit reference
+5. Update changelog documentation as needed
+6. Test thoroughly before deployment
+
+### Fork Change Tracking Protocol
+**CRITICAL**: Before any commit or PR that adds/modifies commands or features:
+1. **Update `FORK_CHANGES.md`** with detailed entry including:
+   - Command name and file path
+   - Purpose and key features
+   - Commit hash and PR number (when available)
+   - Any breaking changes or migration notes
+2. This ensures clear fork maintenance and upstream tracking
+3. **Never commit new commands without updating FORK_CHANGES.md**
 
 ### Documentation Standards
 - Maintain professional technical accuracy
