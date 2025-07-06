@@ -1,0 +1,199 @@
+name: 🔄 Sync Upstream SuperClaude
+
+on:
+  schedule:
+    # Run daily at 8 AM UTC
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+    inputs:
+      force_sync:
+        description: 'Force sync even if no changes detected'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  sync-upstream:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    
+    steps:
+      - name: 🏁 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🔗 Configure git remotes
+        run: |
+          git remote add upstream https://github.com/NomenAK/SuperClaude.git || true
+          git remote set-url upstream https://github.com/NomenAK/SuperClaude.git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: 📥 Fetch upstream changes
+        run: |
+          git fetch upstream
+          git fetch origin
+
+      - name: 🔍 Check for upstream changes
+        id: check_changes
+        run: |
+          # Get current master HEAD
+          CURRENT_HEAD=$(git rev-parse master)
+          UPSTREAM_HEAD=$(git rev-parse upstream/master)
+          
+          echo "current_head=$CURRENT_HEAD" >> $GITHUB_OUTPUT
+          echo "upstream_head=$UPSTREAM_HEAD" >> $GITHUB_OUTPUT
+          
+          if [ "$CURRENT_HEAD" != "$UPSTREAM_HEAD" ]; then
+            echo "changes_detected=true" >> $GITHUB_OUTPUT
+            echo "📊 Changes detected: $CURRENT_HEAD -> $UPSTREAM_HEAD"
+            
+            # Get commit messages since last sync
+            COMMITS=$(git log --oneline --no-merges $CURRENT_HEAD..$UPSTREAM_HEAD | head -10)
+            echo "recent_commits<<EOF" >> $GITHUB_OUTPUT
+            echo "$COMMITS" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "changes_detected=false" >> $GITHUB_OUTPUT
+            echo "✅ No changes detected"
+          fi
+
+      - name: 🔄 Sync master with upstream
+        if: steps.check_changes.outputs.changes_detected == 'true' || github.event.inputs.force_sync == 'true'
+        run: |
+          echo "🔄 Syncing master branch with upstream..."
+          git checkout master
+          git reset --hard upstream/master
+          git push origin master --force-with-lease
+
+      - name: 📊 Analyze merge impact on main
+        if: steps.check_changes.outputs.changes_detected == 'true' || github.event.inputs.force_sync == 'true'
+        id: analyze_impact
+        run: |
+          echo "📊 Analyzing merge impact..."
+          
+          # Check if main can merge cleanly
+          git checkout main
+          git fetch origin main
+          
+          # Test merge without committing
+          if git merge-tree $(git merge-base main master) main master > /dev/null 2>&1; then
+            echo "merge_conflicts=false" >> $GITHUB_OUTPUT
+            echo "✅ Clean merge possible"
+          else
+            echo "merge_conflicts=true" >> $GITHUB_OUTPUT
+            echo "⚠️ Merge conflicts detected"
+          fi
+          
+          # Count changed files
+          CHANGED_FILES=$(git diff --name-only main master | wc -l)
+          echo "changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "📁 Changed files: $CHANGED_FILES"
+
+      - name: 📝 Create/Update tracking issue
+        if: steps.check_changes.outputs.changes_detected == 'true' || github.event.inputs.force_sync == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['upstream-sync'],
+              state: 'open'
+            });
+            
+            const changes = `${{ steps.check_changes.outputs.changes_detected }}` === 'true';
+            const conflicts = `${{ steps.analyze_impact.outputs.merge_conflicts }}` === 'true';
+            const changedFiles = `${{ steps.analyze_impact.outputs.changed_files }}`;
+            const recentCommits = `${{ steps.check_changes.outputs.recent_commits }}`;
+            
+            const title = `🔄 Upstream Sync: ${new Date().toISOString().split('T')[0]}`;
+            const body = `
+            ## 🔄 Upstream Sync Report
+            
+            **Sync Status**: ${changes ? '✅ Changes synced' : '📋 Manual sync'}
+            **Master Branch**: Updated to \`${{ steps.check_changes.outputs.upstream_head }}\`
+            **Merge Conflicts**: ${conflicts ? '⚠️ Conflicts detected' : '✅ Clean merge'}
+            **Changed Files**: ${changedFiles}
+            
+            ## 📊 Recent Upstream Commits
+            \`\`\`
+            ${recentCommits}
+            \`\`\`
+            
+            ## 🔄 Next Steps
+            ${conflicts ? 
+              '⚠️ **Manual intervention required** - conflicts need resolution before merging to main' : 
+              '✅ Ready to merge master into main when convenient'
+            }
+            
+            ## 📚 Merge Instructions
+            \`\`\`bash
+            git checkout main
+            git merge master
+            ${conflicts ? '# Resolve conflicts manually' : '# Should merge cleanly'}
+            git push origin main
+            \`\`\`
+            
+            ---
+            *Automated upstream sync - ${new Date().toISOString()}*
+            `;
+            
+            if (issues.length > 0) {
+              // Update existing issue
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues[0].number,
+                title: title,
+                body: body
+              });
+              console.log(`Updated tracking issue #${issues[0].number}`);
+            } else {
+              // Create new issue
+              const issue = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['upstream-sync', 'maintenance']
+              });
+              console.log(`Created tracking issue #${issue.data.number}`);
+            }
+
+      - name: 📧 Summary
+        if: steps.check_changes.outputs.changes_detected == 'true' || github.event.inputs.force_sync == 'true'
+        run: |
+          echo "🎉 Upstream sync completed!"
+          echo "📊 Summary:"
+          echo "  - Master synced: ✅"
+          echo "  - Conflicts: ${{ steps.analyze_impact.outputs.merge_conflicts == 'true' && '⚠️ Yes' || '✅ None' }}"
+          echo "  - Changed files: ${{ steps.analyze_impact.outputs.changed_files }}"
+          echo "  - Tracking issue: Updated"
+
+  security-scan:
+    runs-on: ubuntu-latest
+    if: needs.sync-upstream.outputs.changes_detected == 'true'
+    needs: sync-upstream
+    
+    steps:
+      - name: 🏁 Checkout updated master
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          
+      - name: 🔒 Security scan of upstream changes
+        run: |
+          echo "🔒 Running security scan on upstream changes..."
+          # Basic security checks
+          if grep -r "password\|secret\|token\|key" . --exclude-dir=.git --exclude="*.md"; then
+            echo "⚠️ Potential secrets detected in upstream changes"
+            exit 1
+          fi
+          echo "✅ Basic security scan passed"
