@@ -55,6 +55,18 @@ This fork extends the original SuperClaude framework with additional commands an
   - Consolidation of duplicate plans with gap analysis
 - **Added**: Commit da7a9b2 (PR #1)
 
+### 9. `/worktree` - Automated Git Worktree Setup
+- **File**: `.claude/commands/worktree.md`
+- **Purpose**: Create new git worktree with branch and PR setup automation
+- **Features**:
+  - Intelligent branch naming with context awareness
+  - Automatic PR creation with draft/ready options
+  - Configurable base branch and prefix patterns
+  - Interactive mode for guided setup
+  - Error handling and cleanup capabilities
+  - Integration with SuperClaude workflow patterns
+- **Added**: Commit [pending] (PR #4)
+
 ## Infrastructure Enhancements
 
 ### Automated Fork Maintenance System

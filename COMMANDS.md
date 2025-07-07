@@ -268,7 +268,7 @@ Generate comprehensive explanations and documentation.
 /explain --api --examples --c7             # API docs with examples
 ```
 
-### ⚙️ Operations Commands (9)
+### ⚙️ Operations Commands (10)
 
 #### `/deploy` - Application Deployment
 Safe deployment with rollback capabilities.
@@ -435,6 +435,28 @@ Just like asking Claude "pull from main with force" - merges main into whatever 
 ```
 
 **⚠️ CONFLICT HANDLING:** `--force` auto-resolves conflicts by keeping main's version. Keeps all your non-conflicting changes.
+
+#### `/worktree` - Automated Git Worktree Setup
+Create new git worktree with branch and PR setup automation.
+
+**Command-Specific Flags:**
+- `--base` - Base branch (default: main)
+- `--prefix` - Branch prefix (default: feature/)
+- `--no-pr` - Skip PR creation
+- `--draft` - Create draft PR (default)
+- `--ready` - Create ready PR
+- `--description` - PR description
+- `--title` - PR title (auto-generated if omitted)
+- `--interactive` - Interactive mode with prompts
+- `--dry-run` - Preview changes without execution
+
+**Examples:**
+```bash
+/worktree auth                              # Create feature/auth worktree
+/worktree --base develop api                # Use develop as base
+/worktree experiment --no-pr                # Skip PR creation
+/worktree --interactive                     # Guided setup
+```
 
 ### 🎨 Design & Architecture Commands (1)
 
@@ -631,4 +653,4 @@ Audit and reorganize project planning documents during phase transitions.
 
 ---
 
-**SuperClaude v2.0.1** - 20 professional commands | 9 cognitive personas | Advanced MCP integration | Evidence-based methodology
+**SuperClaude v2.0.1** - 25 professional commands | 9 cognitive personas | Advanced MCP integration | Evidence-based methodology
