@@ -84,6 +84,20 @@ This fork extends the original SuperClaude framework with additional commands an
   - Performance caching
   - Parallel processing
 
+### Configuration Validation Hook
+- **File**: `.claude/hooks/validate-config.sh`
+- **Purpose**: PreToolUse hook that forces Claude to validate configuration loading before tool execution
+- **Problem Solved**: Prevents random configuration loading failures by ensuring `.claude/` directory configurations are always accessible
+- **Features**:
+  - Validates global `~/.claude/CLAUDE.md` and `settings.json` files
+  - Checks project-specific `.claude/` directory configuration
+  - Auto-creates missing configuration files with defaults
+  - Validates SuperClaude-specific configuration files when detected
+  - Comprehensive logging to `~/.claude/config-validation.log`
+  - Blocks tool execution if critical configurations are inaccessible
+- **Configuration**: Added to `~/.claude/settings.json` as PreToolUse hook with `.*` matcher
+- **Added**: Commit cb1e466 (PR #5)
+
 ### Comprehensive Usage Guide
 - **File**: `USAGE_GUIDE.md`
 - **Purpose**: Detailed documentation for all features and workflows
