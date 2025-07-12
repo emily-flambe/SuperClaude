@@ -97,7 +97,7 @@ All personas are now integrated as flags, available on every command:
 
 ## Complete Command Reference
 
-### 🛠️ Development Commands (3)
+### 🛠️ Development Commands (4)
 
 #### `/build` - Universal Project Builder
 Build projects, features, and components using modern stack templates.
@@ -154,6 +154,24 @@ Create, run, and maintain testing strategies across the stack.
 ```bash
 /test --coverage --e2e --pup               # Full test suite
 /test --mutation --strict                  # Test quality validation
+```
+
+#### `/make-make` - Makefile and Script Generator
+Generate comprehensive Makefile with shell scripts for project workflow automation.
+
+**Command-Specific Flags:**
+- `--docker` - Include Docker build, run, and deployment commands
+- `--ci` - Add CI/CD pipeline commands for automation
+- `--env` - Include environment setup and configuration commands
+- `--deploy` - Add deployment commands for various targets
+- `--overwrite` - Replace existing Makefile without confirmation
+- `--test-all` - Include comprehensive testing commands
+
+**Examples:**
+```bash
+/make-make                                  # Generate Makefile for current project
+/make-make --docker --ci                    # Include Docker and CI commands
+/make-make --overwrite --deploy             # Replace existing with deployment focus
 ```
 
 ### 🔍 Analysis & Improvement Commands (5)
@@ -250,7 +268,7 @@ Generate comprehensive explanations and documentation.
 /explain --api --examples --c7             # API docs with examples
 ```
 
-### ⚙️ Operations Commands (6)
+### ⚙️ Operations Commands (9)
 
 #### `/deploy` - Application Deployment
 Safe deployment with rollback capabilities.
@@ -362,6 +380,62 @@ Professional Git operations with safety features.
 /git --commit --pre-commit               # Commit with validation
 ```
 
+#### `/yolo-merge` - YOLO Merge (⚠️ DANGER)
+Automatic commit, PR creation, and merge without approval or safety checks.
+
+**Command-Specific Flags:**
+- `--branch` - Specify source branch (default: current)
+- `--target` - Target branch for merge (default: main/master)
+- `--message` - Custom commit message (default: auto-generated)
+- `--squash` - Squash commits before merge
+- `--delete-branch` - Delete source branch after merge
+- `--force` - Force push changes, overwrite conflicts
+
+**Examples:**
+```bash
+/yolo-merge "implement user auth"         # Auto-commit and merge
+/yolo-merge --squash --delete-branch      # Clean merge with cleanup
+/yolo-merge --target develop --force      # Force merge to develop
+```
+
+**⚠️ WARNING:** This command bypasses ALL safety checks, approval processes, and conflict resolution. Use only for personal repositories or emergency deployments where normal git workflows are unnecessary.
+
+#### `/abort` - Emergency Session Exit (🛑 NUCLEAR OPTION)
+Emergency session abort with documentation and cleanup when stuck in unproductive loops.
+
+**Command-Specific Flags:**
+- `--save-work` - Stash changes instead of reverting them
+- `--no-revert` - Document findings but keep current changes
+- `--force` - Skip confirmation prompt for emergency abort
+- `--detailed` - Include full git diff in documentation
+- `--issue` - Create GitHub issue from findings
+
+**Examples:**
+```bash
+/abort "stuck debugging infinite API loop"    # Document and clean exit
+/abort --save-work --detailed                # Preserve work with full docs
+/abort --force --no-revert                   # Emergency doc-only abort
+```
+
+**⚠️ DESTRUCTIVE:** Reverts ALL uncommitted changes by default. Documents findings in TROUBLESHOOTING.md and provides clean session exit when you're going in circles.
+
+#### `/pull-main` - Pull Main into Current Branch
+Just like asking Claude "pull from main with force" - merges main into whatever branch you're on.
+
+**Command-Specific Flags:**
+- `--force` - Auto-resolve conflicts by keeping main's version
+- `--backup` - Create backup branch before merge
+- `--push` - Push the merged branch after successful merge
+
+**Examples:**
+```bash
+/pull-main                                  # Merge main into current branch
+/pull-main --force                          # Auto-resolve conflicts, main wins
+/pull-main --backup --push                  # Backup, merge, and push result
+```
+
+**⚠️ CONFLICT HANDLING:** `--force` auto-resolves conflicts by keeping main's version. Keeps all your non-conflicting changes.
+
 ### 🎨 Design & Architecture Commands (1)
 
 #### `/design` - System Architecture
@@ -383,7 +457,7 @@ Professional system design with specifications.
 /design --microservices --event-driven   # Microservices design
 ```
 
-### 🔄 Workflow Commands (4)
+### 🔄 Workflow Commands (5)
 
 #### `/spawn` - Specialized Agents
 Spawn focused agents for parallel tasks.
@@ -462,6 +536,25 @@ Complex feature management across sessions with automatic breakdown and recovery
 /task:complete oauth-task-id                             # Complete with summary
 ```
 
+#### `/checkpoint` - Project Phase Transition
+Audit and reorganize project planning documents during phase transitions.
+
+**Command-Specific Flags:**
+- `--completed` - Define completed phases/milestones for audit
+- `--upcoming` - Define upcoming phases requiring clean planning
+- `--sources` - Sources to analyze for completion (prs,docs,commits)
+- `--plans-dir` - Directory containing planning documents
+- `--done-dir` - Directory for completed plans
+- `--worktree` - Worktree name for isolated audit work
+- `--branch` - Branch name for audit work
+
+**Examples:**
+```bash
+/checkpoint --completed "phases 1-4" --upcoming "phases 5+"        # Basic transition
+/checkpoint --completed "sprint 1-3" --upcoming "sprint 4+" --plans-dir "docs/sprints"  # Sprint checkpoint
+/checkpoint --completed "milestones A-C" --upcoming "milestones D+" --plans-dir "planning" --done-dir "archive/completed"  # Custom setup
+```
+
 ---
 
 ## Flag Combinations & Best Practices
@@ -538,4 +631,4 @@ Complex feature management across sessions with automatic breakdown and recovery
 
 ---
 
-**SuperClaude v2.0.1** - 19 professional commands | 9 cognitive personas | Advanced MCP integration | Evidence-based methodology
+**SuperClaude v2.0.1** - 20 professional commands | 9 cognitive personas | Advanced MCP integration | Evidence-based methodology

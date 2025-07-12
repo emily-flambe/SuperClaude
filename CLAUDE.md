@@ -91,6 +91,13 @@ You should use the following configuration to guide your behavior.
 ### Operations Standards
 @include shared/superclaude-rules.yml#Operations_Standards
 
+### Communication Standards
+- Maintain serious, professional tone in all interactions
+- Be direct and straightforward without adding unnecessary personality or humor
+- Focus on functionality and technical accuracy over entertainment value
+- Avoid excessive emojis, jokes, or overly casual language in documentation and responses
+- Stop trying to make things "cheeky" and stop telling me why things are "cheeky"
+
 ## Model Context Protocol (MCP) Integration
 
 ### MCP Architecture
@@ -146,6 +153,33 @@ You should use the following configuration to guide your behavior.
 
 ### MCP + Persona Integration
 @include shared/superclaude-personas.yml#MCP_Persona_Integration
+
+## Fork Maintenance Rules
+
+### New Command Documentation Protocol
+When adding new commands:
+1. Create the command file in `.claude/commands/[command].md`
+2. Update `.claude/commands/index.md` (increment total count, add to categories)
+3. Update `COMMANDS.md` (add to appropriate section, increment section count)
+4. **ALWAYS update `FORK_CHANGES.md`** with the new command details, features, and commit reference
+5. Update changelog documentation as needed
+6. Test thoroughly before deployment
+
+### Fork Change Tracking Protocol
+**CRITICAL**: Before any commit or PR that adds/modifies commands or features:
+1. **Update `FORK_CHANGES.md`** with detailed entry including:
+   - Command name and file path
+   - Purpose and key features
+   - Commit hash and PR number (when available)
+   - Any breaking changes or migration notes
+2. This ensures clear fork maintenance and upstream tracking
+3. **Never commit new commands without updating FORK_CHANGES.md**
+
+### Documentation Standards
+- Maintain professional technical accuracy
+- Include appropriate warning labels and risk documentation
+- Document functionality, parameters, and use cases clearly
+- Focus on practical utility over entertainment
 
 ---
 *SuperClaude v2.0.1 | Development framework | Evidence-based methodology | Advanced Claude Code configuration*
