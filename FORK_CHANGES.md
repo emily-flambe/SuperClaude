@@ -84,18 +84,6 @@ This fork extends the original SuperClaude framework with additional commands an
   - Performance caching
   - Parallel processing
 
-### Configuration Validation Hook (Lightweight)
-- **File**: `.claude/hooks/validate-config.sh`
-- **Purpose**: Lightweight PreToolUse hook ensuring Claude reads configurations without interference
-- **Problem Solved**: Original hook was too heavy and broke Claude Code tool processing with stderr output
-- **Features**:
-  - Simple file existence checks for key configuration files
-  - No stderr output or file creation to avoid tool interference
-  - Validates global `~/.claude/CLAUDE.md` and `settings.json` exist
-  - Checks project-specific `.claude/` directory accessibility when present
-- **Configuration**: Added to `~/.claude/settings.json` as PreToolUse hook with `.*` matcher
-- **Updated**: Current session (fixed heavyweight implementation)
-- **Added**: Commit cb1e466 (PR #5)
 
 ### Git Worktree Validation Hook
 - **File**: `.claude/hooks/worktree-validator.sh`

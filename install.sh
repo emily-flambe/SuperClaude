@@ -1911,7 +1911,7 @@ install_hooks() {
     if [[ $hooks_copied -gt 0 ]] && [[ "$DRY_RUN" != true ]]; then
         if [[ -f "$global_settings" ]]; then
             # Check if hooks are already configured
-            if ! grep -q "PreToolUse.*validate-config" "$global_settings" 2>/dev/null; then
+            if ! grep -q "PreCommand.*worktree" "$global_settings" 2>/dev/null; then
                 echo "  Updating global settings to include hooks..."
                 # Backup existing settings
                 cp "$global_settings" "$global_settings.backup.$(date +%Y%m%d_%H%M%S)" || {
@@ -1925,12 +1925,6 @@ install_hooks() {
                     # Add hooks section before the last closing brace
                     sed -i.tmp '$ s/}/,\
   "hooks": {\
-    "PreToolUse": [\
-      {\
-        "matcher": ".*",\
-        "command": "'$hooks_dir'/validate-config.sh"\
-      }\
-    ],\
     "PreCommand": [\
       {\
         "matcher": "git worktree add.*",\
