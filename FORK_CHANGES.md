@@ -133,6 +133,7 @@ This fork extends the original SuperClaude framework with additional commands an
 
 ## Installation Changes
 - Modified `install.sh` for better portability
+- **Enhanced install.sh with hooks installation**: Automatically installs hooks to global `~/.claude/hooks/` directory and configures `settings.json` during SuperClaude installation
 
 ## Development Philosophy
 

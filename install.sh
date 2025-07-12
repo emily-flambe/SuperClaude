@@ -1794,6 +1794,9 @@ done
 
 # Check if installation was successful
 if [ "$actual_files" -ge "$expected_files" ] && [ "$critical_files_ok" = true ] && [ $VERIFICATION_FAILURES -eq 0 ]; then
+    # Install hooks to global Claude directory
+    install_hooks
+    
     # Mark installation phase as complete
     INSTALLATION_PHASE=false
     
@@ -1861,6 +1864,101 @@ else
     echo "For manual installation, see README.md"
     exit 1
 fi
+
+# Install hooks to global Claude directory
+install_hooks() {
+    local hooks_dir="$HOME/.claude/hooks"
+    local source_hooks_dir="$INSTALL_DIR/hooks"
+    
+    # Check if hooks exist in the installation
+    if [[ ! -d "$source_hooks_dir" ]]; then
+        log_verbose "No hooks directory found in installation, skipping hooks setup"
+        return 0
+    fi
+    
+    echo ""
+    echo "Installing hooks to global Claude directory..."
+    
+    # Create global hooks directory
+    if [[ "$DRY_RUN" != true ]]; then
+        mkdir -p "$hooks_dir" || {
+            log_warning "Failed to create hooks directory: $hooks_dir"
+            return 1
+        }
+    fi
+    
+    # Copy hooks to global directory
+    local hooks_copied=0
+    while IFS= read -r hook_file; do
+        if [[ -f "$source_hooks_dir/$hook_file" ]]; then
+            if [[ "$DRY_RUN" != true ]]; then
+                if cp "$source_hooks_dir/$hook_file" "$hooks_dir/"; then
+                    chmod +x "$hooks_dir/$hook_file"
+                    echo "  Installed hook: $hook_file"
+                    ((hooks_copied++))
+                else
+                    log_warning "Failed to copy hook: $hook_file"
+                fi
+            else
+                echo "  Would install hook: $hook_file"
+                ((hooks_copied++))
+            fi
+        fi
+    done < <(find "$source_hooks_dir" -name "*.sh" -type f -exec basename {} \;)
+    
+    # Update global settings.json to include hooks
+    local global_settings="$HOME/.claude/settings.json"
+    if [[ $hooks_copied -gt 0 ]] && [[ "$DRY_RUN" != true ]]; then
+        if [[ -f "$global_settings" ]]; then
+            # Check if hooks are already configured
+            if ! grep -q "PreToolUse.*validate-config" "$global_settings" 2>/dev/null; then
+                echo "  Updating global settings to include hooks..."
+                # Backup existing settings
+                cp "$global_settings" "$global_settings.backup.$(date +%Y%m%d_%H%M%S)" || {
+                    log_warning "Failed to backup global settings"
+                }
+                
+                # Add hooks configuration (basic approach - replace or add hooks section)
+                if grep -q '"hooks"' "$global_settings"; then
+                    log_verbose "Hooks section already exists in settings, manual configuration may be needed"
+                else
+                    # Add hooks section before the last closing brace
+                    sed -i.tmp '$ s/}/,\
+  "hooks": {\
+    "PreToolUse": [\
+      {\
+        "matcher": ".*",\
+        "command": "'$hooks_dir'/validate-config.sh"\
+      }\
+    ],\
+    "PreCommand": [\
+      {\
+        "matcher": "git worktree add.*",\
+        "command": "'$hooks_dir'/worktree-validator.sh"\
+      }\
+    ]\
+  }\
+}/' "$global_settings" && rm -f "$global_settings.tmp" || {
+                        log_warning "Failed to update global settings automatically"
+                        log_warning "Please manually add hooks configuration to $global_settings"
+                    }
+                fi
+            else
+                log_verbose "Hooks already configured in global settings"
+            fi
+        else
+            log_warning "Global settings file not found, please configure hooks manually"
+        fi
+    fi
+    
+    if [[ $hooks_copied -gt 0 ]]; then
+        echo -e "${GREEN}✓ Installed $hooks_copied hook(s) to global Claude directory${NC}"
+    else
+        echo "No hooks to install"
+    fi
+    
+    return 0
+}
 
 # Check for required disk space
 check_disk_space() {
