@@ -84,19 +84,30 @@ This fork extends the original SuperClaude framework with additional commands an
   - Performance caching
   - Parallel processing
 
-### Configuration Validation Hook
+### Configuration Validation Hook (Lightweight)
 - **File**: `.claude/hooks/validate-config.sh`
-- **Purpose**: PreToolUse hook that forces Claude to validate configuration loading before tool execution
-- **Problem Solved**: Prevents random configuration loading failures by ensuring `.claude/` directory configurations are always accessible
+- **Purpose**: Lightweight PreToolUse hook ensuring Claude reads configurations without interference
+- **Problem Solved**: Original hook was too heavy and broke Claude Code tool processing with stderr output
 - **Features**:
-  - Validates global `~/.claude/CLAUDE.md` and `settings.json` files
-  - Checks project-specific `.claude/` directory configuration
-  - Auto-creates missing configuration files with defaults
-  - Validates SuperClaude-specific configuration files when detected
-  - Comprehensive logging to `~/.claude/config-validation.log`
-  - Blocks tool execution if critical configurations are inaccessible
+  - Simple file existence checks for key configuration files
+  - No stderr output or file creation to avoid tool interference
+  - Validates global `~/.claude/CLAUDE.md` and `settings.json` exist
+  - Checks project-specific `.claude/` directory accessibility when present
 - **Configuration**: Added to `~/.claude/settings.json` as PreToolUse hook with `.*` matcher
+- **Updated**: Current session (fixed heavyweight implementation)
 - **Added**: Commit cb1e466 (PR #5)
+
+### Git Worktree Validation Hook
+- **File**: `.claude/hooks/worktree-validator.sh`
+- **Purpose**: Enforces git worktree organization by requiring all worktrees be created in `worktrees/` directory
+- **Problem Solved**: Prevents scattered worktree creation and maintains project organization
+- **Features**:
+  - Intercepts `git worktree add` commands via PreCommand hook
+  - Validates worktree path starts with `worktrees/`
+  - Provides clear error messages with correct usage
+  - Lightweight implementation with no side effects
+- **Configuration**: Added to `~/.claude/settings.json` as PreCommand hook with `git worktree add.*` matcher
+- **Added**: Current session
 
 ### Comprehensive Usage Guide
 - **File**: `USAGE_GUIDE.md`
