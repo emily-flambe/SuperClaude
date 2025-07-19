@@ -88,6 +88,33 @@ This fork extends the original SuperClaude framework with additional commands an
 - **Usage**: `/analyze --persona-critic`, `/review --persona-critic --ultrathink`
 - **Added**: Current session
 
+### Universal Cute Animal Helper Squad (--parallel flag)
+- **File**: `.claude/shared/animal-subagent-patterns.yml`
+- **Flag**: `--parallel` or `--animal-squad` (works with ANY command!)
+- **Purpose**: Summons a squad of cute animal helpers for parallel execution on any task
+- **The Animal Squad**:
+  - Security Hedgehog (🦔): Defensive and thorough, protects your code
+  - Performance Cheetah (🐆): Fast and efficient, makes everything speedy
+  - Architecture Owl (🦉): Wise and observant, sees the big picture
+  - Quality Beaver (🦫): Meticulous builder, ensures perfect craftsmanship
+- **Universal Features**:
+  - Works with ANY SuperClaude command: `/build --parallel`, `/test --animal-squad`, etc.
+  - Each animal adapts their skills to the specific command
+  - Animals introduce themselves when summoned
+  - Commits are signed with animal emojis and names
+  - Parallel execution for faster results
+- **Example Usage**:
+  - `/build --react --parallel` → All animals help build your React app
+  - `/test --coverage --animal-squad` → Animals ensure quality testing
+  - `/deploy --prod --parallel` → Safe deployment with animal assistance
+  - `/analyze --persona-critic --parallel` → Critical animals for harsh reviews!
+- **Commit Pattern Examples**:
+  - `🦔 [Security Hedgehog]: Add input validation to prevent XSS`
+  - `🐆 [Performance Cheetah]: Optimize build time by 80%`
+  - `🦉 [Architecture Owl]: Implement clean architecture patterns`
+  - `🦫 [Quality Beaver]: Add comprehensive test suite`
+- **Added**: Current session
+
 ### Smart Lint Hook
 - **File**: `.claude/hooks/smart-lint.sh`
 - **Purpose**: Intelligent linting with automatic fixes and caching

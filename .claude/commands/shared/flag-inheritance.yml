@@ -47,6 +47,10 @@ Universal_Always:
   Introspection:
     --introspect: "Deep transparency mode - expose thinking, decisions, workflow"
     --introspection: "Alias for --introspect"
+    
+  Parallel_Execution:
+    --parallel: "Summon cute animal subagent helpers for parallel execution 🦔🐆🦉🦫"
+    --animal-squad: "Alias for --parallel (summon the animal helper squad)"
 ```
 
 ## Common Workflow Flags (3+ Commands)
