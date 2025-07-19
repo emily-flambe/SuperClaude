@@ -42,6 +42,7 @@ Universal_Always:
     --persona-refactorer: "Code refactoring mode (quality improvements, cleanup)"
     --persona-performance: "Performance optimization mode (profiling, bottlenecks)"
     --persona-qa: "Quality assurance mode (testing, edge cases, validation)"
+    --persona-critic: "Ultra-critical mode (fault-finding, zero tolerance, evidence required)"
     
   Introspection:
     --introspect: "Deep transparency mode - expose thinking, decisions, workflow"
