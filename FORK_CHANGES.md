@@ -75,6 +75,19 @@ This fork extends the original SuperClaude framework with additional commands an
 
 ## New Features
 
+### Critic Persona
+- **File**: `.claude/commands/shared/persona-patterns.yml` and `.claude/shared/superclaude-personas.yml`
+- **Flag**: `--persona-critic`
+- **Purpose**: Exceptionally critical code review persona that finds flaws relentlessly
+- **Features**:
+  - Ultra-critical analysis with zero tolerance for mediocrity
+  - Only validates when code/decisions are bulletproof with evidence
+  - Combines ultrathink depth with fault-finding focus
+  - Demands proof for every claim and assumption
+  - Harsh but constructive criticism aimed at excellence
+- **Usage**: `/analyze --persona-critic`, `/review --persona-critic --ultrathink`
+- **Added**: Current session
+
 ### Smart Lint Hook
 - **File**: `.claude/hooks/smart-lint.sh`
 - **Purpose**: Intelligent linting with automatic fixes and caching
