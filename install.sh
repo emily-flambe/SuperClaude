@@ -753,7 +753,17 @@ find_obsolete_files() {
     local installed_files=$(get_installed_files "$install_dir" | sort | uniq)
     
     # Find files that exist in installed but not in source
-    comm -13 <(echo "$source_files" | sort) <(echo "$installed_files" | sort)
+    # Create temporary files for comm comparison
+    local temp_source=$(mktemp)
+    local temp_installed=$(mktemp)
+    
+    echo "$source_files" | sort > "$temp_source"
+    echo "$installed_files" | sort > "$temp_installed"
+    
+    comm -13 "$temp_source" "$temp_installed"
+    
+    # Clean up temporary files
+    rm -f "$temp_source" "$temp_installed"
 }
 
 # Function: cleanup_obsolete_files
@@ -1783,88 +1793,6 @@ echo -e "  Shared YML files: ${GREEN}$shared_yml${NC}"
 echo -e "  Shared scripts: ${GREEN}$shared_scripts${NC}"
 echo -e "  Claude shared files: ${GREEN}$claude_shared${NC}"
 
-# Verify critical files exist
-critical_files_ok=true
-for critical_file in "CLAUDE.md" "commands" "shared"; do
-    if [[ ! -e "$INSTALL_DIR/$critical_file" ]]; then
-        echo -e "${YELLOW}Warning: Critical file/directory missing: $critical_file${NC}"
-        critical_files_ok=false
-    fi
-done
-
-# Check if installation was successful
-if [ "$actual_files" -ge "$expected_files" ] && [ "$critical_files_ok" = true ] && [ $VERIFICATION_FAILURES -eq 0 ]; then
-    # Install hooks to global Claude directory
-    install_hooks
-    
-    # Mark installation phase as complete
-    INSTALLATION_PHASE=false
-    
-    echo ""
-    if [[ "$UPDATE_MODE" = true ]]; then
-        echo -e "${GREEN}✓ SuperClaude updated successfully!${NC}"
-        echo ""
-        # Check for .new files
-        new_files=$(find "$INSTALL_DIR" -name "*.new" 2>/dev/null)
-        if [[ -n "$new_files" ]]; then
-            echo -e "${YELLOW}Note: The following files have updates available:${NC}"
-            echo "$new_files" | while read -r file; do
-                echo "  - $file"
-            done
-            echo ""
-            echo "To review changes: diff <file> <file>.new"
-            echo "To apply update: mv <file>.new <file>"
-            echo ""
-        fi
-    else
-        echo -e "${GREEN}✓ SuperClaude installed successfully!${NC}"
-        echo ""
-        echo "Next steps:"
-        echo "1. Open any project with Claude Code"
-        echo "2. Try a command: /analyze --code"
-        echo "3. Activate a persona: /analyze --persona-architect"
-        echo ""
-    fi
-    if [ -n "$BACKUP_DIR" ] && [ -d "$BACKUP_DIR" ]; then
-        echo -e "${YELLOW}Note: Your previous configuration was backed up to:${NC}"
-        echo "$BACKUP_DIR"
-        echo ""
-    fi
-    echo "For more information, see README.md"
-    
-    # Preserve BACKUP_DIR for user reference but mark installation as complete
-    INSTALLATION_PHASE=false
-    log_verbose "Installation completed successfully, rollback disabled"
-else
-    echo ""
-    echo -e "${RED}✗ Installation may be incomplete${NC}"
-    echo ""
-    echo "Expected vs Actual file counts:"
-    echo "  Total files: $actual_files/$expected_files$([ "$actual_files" -lt "$expected_files" ] && echo " ❌" || echo " ✓")"
-    if [ $VERIFICATION_FAILURES -gt 0 ]; then
-        echo "  Integrity failures: $VERIFICATION_FAILURES ❌"
-    fi
-    echo ""
-    
-    # List missing files if any
-    if [ "$actual_files" -lt "$expected_files" ]; then
-        echo "Missing files:"
-        comm -23 <(get_source_files "." | sort) <(get_installed_files "$INSTALL_DIR" | sort) | head -10 | while read -r file; do
-            echo "  - $file"
-        done
-        echo ""
-    fi
-    
-    echo "Troubleshooting steps:"
-    echo "1. Check for error messages above"
-    echo "2. Ensure you have write permissions to $INSTALL_DIR"
-    echo "3. Verify all source files exist in the current directory"
-    echo "4. Try running with sudo if permission errors occur"
-    echo ""
-    echo "For manual installation, see README.md"
-    exit 1
-fi
-
 # Install hooks to global Claude directory
 install_hooks() {
     local hooks_dir="$HOME/.claude/hooks"
@@ -1953,6 +1881,88 @@ install_hooks() {
     
     return 0
 }
+
+# Verify critical files exist
+critical_files_ok=true
+for critical_file in "CLAUDE.md" "commands" "shared"; do
+    if [[ ! -e "$INSTALL_DIR/$critical_file" ]]; then
+        echo -e "${YELLOW}Warning: Critical file/directory missing: $critical_file${NC}"
+        critical_files_ok=false
+    fi
+done
+
+# Check if installation was successful
+if [ "$actual_files" -ge "$expected_files" ] && [ "$critical_files_ok" = true ] && [ $VERIFICATION_FAILURES -eq 0 ]; then
+    # Install hooks to global Claude directory
+    install_hooks
+    
+    # Mark installation phase as complete
+    INSTALLATION_PHASE=false
+    
+    echo ""
+    if [[ "$UPDATE_MODE" = true ]]; then
+        echo -e "${GREEN}✓ SuperClaude updated successfully!${NC}"
+        echo ""
+        # Check for .new files
+        new_files=$(find "$INSTALL_DIR" -name "*.new" 2>/dev/null)
+        if [[ -n "$new_files" ]]; then
+            echo -e "${YELLOW}Note: The following files have updates available:${NC}"
+            echo "$new_files" | while read -r file; do
+                echo "  - $file"
+            done
+            echo ""
+            echo "To review changes: diff <file> <file>.new"
+            echo "To apply update: mv <file>.new <file>"
+            echo ""
+        fi
+    else
+        echo -e "${GREEN}✓ SuperClaude installed successfully!${NC}"
+        echo ""
+        echo "Next steps:"
+        echo "1. Open any project with Claude Code"
+        echo "2. Try a command: /analyze --code"
+        echo "3. Activate a persona: /analyze --persona-architect"
+        echo ""
+    fi
+    if [ -n "$BACKUP_DIR" ] && [ -d "$BACKUP_DIR" ]; then
+        echo -e "${YELLOW}Note: Your previous configuration was backed up to:${NC}"
+        echo "$BACKUP_DIR"
+        echo ""
+    fi
+    echo "For more information, see README.md"
+    
+    # Preserve BACKUP_DIR for user reference but mark installation as complete
+    INSTALLATION_PHASE=false
+    log_verbose "Installation completed successfully, rollback disabled"
+else
+    echo ""
+    echo -e "${RED}✗ Installation may be incomplete${NC}"
+    echo ""
+    echo "Expected vs Actual file counts:"
+    echo "  Total files: $actual_files/$expected_files$([ "$actual_files" -lt "$expected_files" ] && echo " ❌" || echo " ✓")"
+    if [ $VERIFICATION_FAILURES -gt 0 ]; then
+        echo "  Integrity failures: $VERIFICATION_FAILURES ❌"
+    fi
+    echo ""
+    
+    # List missing files if any
+    if [ "$actual_files" -lt "$expected_files" ]; then
+        echo "Missing files:"
+        comm -23 <(get_source_files "." | sort) <(get_installed_files "$INSTALL_DIR" | sort) | head -10 | while read -r file; do
+            echo "  - $file"
+        done
+        echo ""
+    fi
+    
+    echo "Troubleshooting steps:"
+    echo "1. Check for error messages above"
+    echo "2. Ensure you have write permissions to $INSTALL_DIR"
+    echo "3. Verify all source files exist in the current directory"
+    echo "4. Try running with sudo if permission errors occur"
+    echo ""
+    echo "For manual installation, see README.md"
+    exit 1
+fi
 
 # Check for required disk space
 check_disk_space() {

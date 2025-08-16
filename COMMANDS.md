@@ -174,7 +174,7 @@ Generate comprehensive Makefile with shell scripts for project workflow automati
 /make-make --overwrite --deploy             # Replace existing with deployment focus
 ```
 
-### 🔍 Analysis & Improvement Commands (5)
+### 🔍 Analysis & Improvement Commands (6)
 
 #### `/review` - AI-Powered Code Review
 Comprehensive code review and quality analysis with evidence-based recommendations.
@@ -266,6 +266,26 @@ Generate comprehensive explanations and documentation.
 ```bash
 /explain --depth expert --visual --seq     # Expert documentation
 /explain --api --examples --c7             # API docs with examples
+```
+
+#### `/critic-parallel` - Parallel Multi-Agent Critical Analysis
+Deploy multiple specialized critic agents for comprehensive parallel analysis.
+
+**Command-Specific Flags:**
+- `--focus` - Target specific areas (security,performance,architecture,quality)
+- `--depth` - Analysis depth (quick|standard|exhaustive)
+- `--async` - Run analysis in background
+- `--incremental` - Analyze only changes since last run
+- `--collaborative` - Work with other personas in real-time
+- `--auto-fix` - Attempt automatic fixes for issues
+- `--webhook` - Post results to webhook URL
+
+**Examples:**
+```bash
+/critic-parallel analyze-codebase                    # Full parallel critique
+/critic-parallel --focus security,performance src/   # Targeted analysis
+/critic-parallel --depth exhaustive --async         # Deep background review
+/critic-parallel --incremental --since HEAD~5       # Changes-only analysis
 ```
 
 ### ⚙️ Operations Commands (9)

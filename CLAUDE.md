@@ -181,5 +181,8 @@ When adding new commands:
 - Document functionality, parameters, and use cases clearly
 - Focus on practical utility over entertainment
 
+## AI Assistant Critical Guidelines
+@include shared/ai-assistant-guidelines.yml#Critical_Guidelines
+
 ---
 *SuperClaude v2.0.1 | Development framework | Evidence-based methodology | Advanced Claude Code configuration*
