@@ -55,6 +55,7 @@ AI specialists that try to jump in when they seem relevant:
 - ⚙️ **backend** - APIs and infrastructure
 - 🔍 **analyzer** - Debugging and figuring things out
 - 🛡️ **security** - Security concerns and vulnerabilities
+- ⚖️ **critic** - Ruthless fault-finding and standards enforcement
 - ✍️ **scribe** - Documentation and writing
 - *...and 5 more specialists*
 
