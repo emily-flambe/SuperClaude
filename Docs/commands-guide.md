@@ -2,7 +2,7 @@
 
 ## 💡 Don't Overthink It - SuperClaude Tries to Help
 
-**The truth about these 17 commands**: You don't need to memorize them. Just start with `/sc:analyze` or `/sc:implement` and see what happens! 
+**The truth about these 18 commands**: You don't need to memorize them. Just start with `/sc:analyze` or `/sc:implement` and see what happens! 
 
 **Here's how it usually works:**
 - Type `/` in Claude Code → See available commands
@@ -18,6 +18,7 @@
 
 **Start here** (no reading required):
 ```bash
+/sc:clear                    # Fresh start with clean context
 /sc:index                    # See what's available
 /sc:analyze src/            # Tries to analyze your code smartly 
 /sc:workflow feature-100-prd.md  # Creates step-by-step implementation workflow from PRD
@@ -31,7 +32,7 @@
 
 ---
 
-A practical guide to all 16 SuperClaude slash commands. We'll be honest about what works well and what's still rough around the edges.
+A practical guide to all 18 SuperClaude slash commands. We'll be honest about what works well and what's still rough around the edges.
 
 ## Quick Reference 📋
 
@@ -41,6 +42,7 @@ A practical guide to all 16 SuperClaude slash commands. We'll be honest about wh
 |---------|---------|-----------------|----------|
 | `/sc:analyze` | Smart code analysis | Security/performance experts | Finding issues, understanding codebases |
 | `/sc:build` | Intelligent building | Frontend/backend specialists | Compilation, bundling, deployment prep |
+| `/sc:clear` | Context reset | None (native only) | Fresh start, reload guidelines |
 | `/sc:implement` | Feature implementation | Domain-specific experts | Creating features, components, APIs, services |
 | `/sc:improve` | Automatic code cleanup | Quality experts | Refactoring, optimization, quality fixes |
 | `/sc:troubleshoot` | Problem investigation | Debug specialists | Debugging, issue investigation |
@@ -605,6 +607,53 @@ A practical guide to all 16 SuperClaude slash commands. We'll be honest about wh
 - Won't fix bad git habits - just makes them easier
 
 ## Utility Commands 🔧
+
+### `/clear` - Context Reset & Guidelines Reload
+**What it does**: Clears current context and reloads project-specific AI behavior guidelines for a fresh start.
+
+**When to use it**:
+- Starting fresh after context gets cluttered
+- When AI behavior seems off or drifting
+- After switching between projects
+- Beginning of new work sessions
+- After complex operations or errors
+
+**Basic syntax**:
+```bash
+/sc:clear                          # Clear and reload from .project/ or core docs
+/sc:clear --verbose                # Show detailed reload process
+/sc:clear --project-dir ./docs/ai  # Load from custom directory
+```
+
+**Useful flags**:
+- `--verbose` - Show detailed loading process
+- `--project-dir <path>` - Override default .project/ location
+
+**Real examples**:
+```bash
+/sc:clear                          # Quick reset for fresh start
+/sc:clear --verbose                # See what's being loaded
+/sc:clear --project-dir ./guidelines  # Load custom guidelines
+```
+
+**What it loads (in priority order)**:
+1. `.project/` directory guidelines (if exists)
+2. SuperClaude core documentation (PRINCIPLES.md, RULES.md, etc.)
+3. Project-specific standards and conventions
+
+**Key behaviors it enforces**:
+- No flattery phrases ("You're absolutely right" is banned!)
+- Evidence-based decision making
+- Objective technical focus
+- No emojis in code
+- Verification before completion
+
+**Gotchas**:
+- Clears ALL context - save important info first
+- Takes a moment to reload all guidelines
+- Essential for consistent AI behavior across sessions
+
+---
 
 ### `/index` - Command Navigation
 **What it does**: Helps you find the right command for your task.
