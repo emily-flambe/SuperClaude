@@ -127,8 +127,6 @@ performance-profile: "optimization"
 
 ### Meta & Orchestration Commands
 
-**`/clear [flags]`** - Context reset and project guidelines reload | Auto-Persona: Analyzer | MCP: None (native tools only)
-
 **`/index [query] [flags]`** - Command catalog browsing | Auto-Persona: Mentor, Analyzer | MCP: Sequential
 
 **`/load [path] [flags]`** - Project context loading | Auto-Persona: Analyzer, Architect, Scribe | MCP: All servers
@@ -154,7 +152,7 @@ complex: "Resource-intensive with comprehensive analysis"
 - **Testing**: test
 - **Documentation**: document
 - **Version-Control**: git
-- **Meta**: clear, index, load, spawn
+- **Meta**: index, load, spawn
 
 ### Wave-Enabled Commands
 7 commands: `/analyze`, `/build`, `/design`, `/implement`, `/improve`, `/task`, `/workflow`
