@@ -131,6 +131,8 @@ performance-profile: "optimization"
 
 **`/load [path] [flags]`** - Project context loading | Auto-Persona: Analyzer, Architect, Scribe | MCP: All servers
 
+**`/readme [flags]`** - Project initialization analysis and AI behavior guidelines discovery | Auto-Persona: Analyzer, Mentor | MCP: Sequential
+
 **Iterative Operations** - Use `--loop` flag with improvement commands for iterative refinement
 
 **`/spawn [mode] [flags]`** - Task orchestration | Auto-Persona: Analyzer, Architect, DevOps | MCP: All servers
