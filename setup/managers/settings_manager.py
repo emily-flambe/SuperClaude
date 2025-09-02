@@ -513,3 +513,46 @@ class SettingsManager:
             
         except (json.JSONDecodeError, IOError):
             return False
+    
+    def configure_hooks(self, hook_name: str, hook_config: Dict[str, Any]) -> None:
+        """
+        Configure hooks in settings.json for Claude Code
+        
+        Args:
+            hook_name: Name of the hook (e.g., "Stop")
+            hook_config: Hook configuration dict
+        """
+        settings = self.load_settings()
+        
+        # Ensure hooks section exists
+        if "hooks" not in settings:
+            settings["hooks"] = {}
+        
+        # Update hook configuration
+        settings["hooks"][hook_name] = hook_config
+        
+        # Save updated settings
+        self.save_settings(settings, create_backup=True)
+    
+    def add_stop_hook(self, command_path: str, timeout: int = 5) -> None:
+        """
+        Add a Stop hook to settings.json
+        
+        Args:
+            command_path: Path to the hook script
+            timeout: Timeout in seconds (default: 5)
+        """
+        stop_hook_config = [
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": command_path,
+                        "timeout": timeout
+                    }
+                ]
+            }
+        ]
+        
+        self.configure_hooks("Stop", stop_hook_config)
