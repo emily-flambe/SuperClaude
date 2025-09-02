@@ -216,8 +216,6 @@ def detect_sycophantic_language(text: str) -> Tuple[bool, List[str], str]:
     return len(matched_phrases) > 0, matched_phrases, highest_confidence
 
 
-
-
 def main():
     """Main hook function."""
     try:
