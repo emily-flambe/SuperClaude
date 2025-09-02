@@ -1,12 +1,7 @@
-#!/usr/bin/env python3
 """
-SuperClaude Framework Management Hub
-Unified entry point for all SuperClaude operations
+SuperClaude Hooks Module
 
-Usage:
-    SuperClaude install [options]
-    SuperClaude update [options]
-    SuperClaude uninstall [options]
-    SuperClaude backup [options]
-    SuperClaude --help
+Pre-configured hooks for Claude Code to enhance behavior and prevent common issues.
 """
+
+__all__ = ['anti_sycophant']

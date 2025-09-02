@@ -15,21 +15,20 @@ class HooksComponent(Component):
         """Initialize hooks component"""
         super().__init__(install_dir, Path("hooks"))
         
-        # Define hook files to install (when hooks are ready)
+        # Define hook files to install
         self.hook_files = [
-            "pre_tool_use.py",
-            "post_tool_use.py",
-            "error_handler.py",
-            "context_accumulator.py",
-            "performance_monitor.py"
+            "anti_sycophant.py"  # Anti-sycophantic behavior hook
         ]
+        
+        # Set component_files for base class
+        self.component_files = self.hook_files
     
     def get_metadata(self) -> Dict[str, str]:
         """Get component metadata"""
         return {
             "name": "hooks",
             "version": "3.0.0",
-            "description": "Claude Code hooks integration (future-ready)",
+            "description": "Claude Code hooks for enhanced behavior and anti-sycophantic responses",
             "category": "integration"
         }
     def get_metadata_modifications(self) -> Dict[str, Any]:
@@ -65,10 +64,10 @@ class HooksComponent(Component):
         """Install hooks component"""
         self.logger.info("Installing SuperClaude hooks component...")
 
-        # This component is future-ready - hooks aren't implemented yet
+        # Check if source directory exists
         source_dir = self._get_source_dir()
 
-        if not source_dir.exists() or (source_dir / "PLACEHOLDER.py").exists  :
+        if not source_dir.exists():
             self.logger.info("Hooks are not yet implemented - installing placeholder component")
             
             # Create placeholder hooks directory
@@ -78,25 +77,17 @@ class HooksComponent(Component):
 
             # Create placeholder file
             placeholder_content = '''"""
-SuperClaude Hooks - Future Implementation
+SuperClaude Hooks
 
-This directory is reserved for Claude Code hooks integration.
-Hooks will provide lifecycle management and automation capabilities.
+This directory contains Claude Code hooks for enhanced behavior.
 
-Planned hooks:
-- pre_tool_use: Execute before tool usage
-- post_tool_use: Execute after tool completion
-- error_handler: Handle tool errors and recovery
-- context_accumulator: Manage context across operations
-- performance_monitor: Track and optimize performance
+Available hooks:
+- anti_sycophant: Prevents sycophantic responses and enforces objective, technical communication
 
 For more information, see SuperClaude documentation.
 """
 
-# Placeholder for future hooks implementation
-def placeholder_hook():
-"""Placeholder hook function"""
-pass
+# This file is a placeholder when no actual hooks are installed
 '''
             
             placeholder_path = self.install_component_subdir / "PLACEHOLDER.py"
@@ -174,11 +165,17 @@ pass
             # Add hook registration to metadata
             self.settings_manager.add_component_registration("hooks", {
                 "version": "3.0.0",
-                "category": "commands",
+                "category": "integration",
                 "files_count": len(self.hook_files)
             })
 
-            self.logger.info("Updated metadata with commands component registration")
+            # Configure anti_sycophant hook in settings.json if it was installed
+            anti_sycophant_path = self.install_component_subdir / "anti_sycophant.py"
+            if anti_sycophant_path.exists():
+                self.settings_manager.add_stop_hook(str(anti_sycophant_path), timeout=5)
+                self.logger.info("Configured anti_sycophant hook in settings.json")
+
+            self.logger.info("Updated metadata with hooks component registration")
         except Exception as e:
             self.logger.error(f"Failed to update metadata: {e}")
             return False
@@ -220,14 +217,44 @@ pass
             try:
                 if self.settings_manager.is_component_installed("hooks"):
                     self.settings_manager.remove_component_registration("hooks")
+                    self.logger.info("Removed hooks component from metadata")
                     
-                    # Also remove hooks configuration section if it exists
-                    settings = self.settings_manager.load_settings()
-                    if "hooks" in settings:
-                        del settings["hooks"]
+                # Remove hooks configuration from settings.json
+                settings = self.settings_manager.load_settings()
+                hooks_removed = False
+                
+                if "hooks" in settings and "Stop" in settings["hooks"]:
+                    # Filter out our anti_sycophant hook from Stop hooks
+                    stop_hooks = settings["hooks"]["Stop"]
+                    filtered_hooks = []
+                    
+                    for hook_config in stop_hooks:
+                        if "hooks" in hook_config:
+                            filtered_hook_list = []
+                            for hook in hook_config["hooks"]:
+                                if hook.get("command", "").endswith("anti_sycophant.py"):
+                                    hooks_removed = True
+                                    continue
+                                filtered_hook_list.append(hook)
+                            
+                            if filtered_hook_list:
+                                hook_config["hooks"] = filtered_hook_list
+                                filtered_hooks.append(hook_config)
+                    
+                    if filtered_hooks:
+                        settings["hooks"]["Stop"] = filtered_hooks
+                    else:
+                        # Remove Stop key if no hooks left
+                        del settings["hooks"]["Stop"]
+                        
+                        # Remove hooks section entirely if empty
+                        if not settings["hooks"]:
+                            del settings["hooks"]
+                    
+                    if hooks_removed:
                         self.settings_manager.save_settings(settings)
-                    
-                    self.logger.info("Removed hooks component and configuration from settings.json")
+                        self.logger.info("Removed anti_sycophant hook from settings.json")
+                        
             except Exception as e:
                 self.logger.warning(f"Could not update settings.json: {e}")
             
