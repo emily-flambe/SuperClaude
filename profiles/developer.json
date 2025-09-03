@@ -1,9 +1,10 @@
 {
   "name": "Developer Installation", 
-  "description": "Full installation with all components including MCP servers",
+  "description": "Full installation with all components including MCP servers and scripts",
   "components": [
     "core",
     "commands",
+    "scripts",
     "mcp"
   ],
   "features": {
