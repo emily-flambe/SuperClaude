@@ -1,9 +1,10 @@
 {
   "name": "Quick Installation",
-  "description": "Recommended installation with core framework and essential components",
+  "description": "Recommended installation with core framework, commands, and scripts",
   "components": [
     "core",
-    "commands"
+    "commands",
+    "scripts"
   ],
   "features": {
     "auto_update": false,
