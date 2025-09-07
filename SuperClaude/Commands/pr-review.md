@@ -15,14 +15,22 @@ Perform an intelligent, AI-powered review of a GitHub pull request that:
 
 ## Usage
 ```
-/sc:pr-review PR=<number> [--repo owner/name] [--no-comment] [--guidelines path/to/file.md]
+/sc:pr-review [PR=<number>] [--repo owner/name] [--no-comment] [--guidelines path/to/file.md]
 ```
 
 ## Arguments
-- `PR=<number>` - The pull request number to review (required)
+- `PR=<number>` - The pull request number to review (optional - defaults to PR for current branch)
 - `--repo` - Repository in format owner/name (default: uses current repo)
 - `--no-comment` - Perform review but don't post comment to GitHub (default: post comment)
 - `--guidelines` - Custom path to guidelines file (default: .github/copilot-instructions.md)
+
+## Default PR Detection
+When no PR number is provided, the command will:
+1. Get the current branch name using `git branch --show-current`
+2. Search for open PRs from that branch using `gh pr list --head <branch>`
+3. If exactly one PR is found, use it automatically
+4. If multiple PRs exist, show a list and ask which to review
+5. If no PR exists, suggest creating one with `gh pr create`
 
 ## Features
 ### AI-Powered Review
@@ -62,6 +70,21 @@ Perform an intelligent, AI-powered review of a GitHub pull request that:
 4. Checks CI/CD status and incorporates results
 5. Generates categorized findings with clear TODOs
 6. Posts professional review comment directly to PR (default behavior)
+
+## Example Usage
+```bash
+# Review a specific PR
+/sc:pr-review PR=123
+
+# Review PR for current branch (auto-detect)
+/sc:pr-review
+
+# Review without posting comment
+/sc:pr-review --no-comment
+
+# Review with custom guidelines
+/sc:pr-review --guidelines .github/review-guidelines.md
+```
 
 ## Example Output
 ```
