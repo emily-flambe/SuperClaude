@@ -135,7 +135,14 @@ delete_local_branches() {
     local branches=$(git branch | grep -v "^\*" | grep -v "^  $MAIN_BRANCH$" | grep -v "^  master$" | sed 's/^  //')
     
     # Convert exclude list to array
-    IFS=',' read -ra EXCLUDE_ARRAY <<< "$EXCLUDE_BRANCHES"
+    if [ -n "$EXCLUDE_BRANCHES" ]; then
+        IFS=',' read -ra EXCLUDE_ARRAY <<< "$EXCLUDE_BRANCHES"
+    else
+        EXCLUDE_ARRAY=()
+    fi
+    
+    # Always exclude production branch
+    EXCLUDE_ARRAY+=("production")
     
     local deleted_count=0
     local skipped_count=0
@@ -231,7 +238,14 @@ delete_remote_branches() {
     local branches=$(git branch -r | grep "^  $REMOTE/" | grep -v "$REMOTE/HEAD" | grep -v "$REMOTE/$MAIN_BRANCH" | grep -v "$REMOTE/master" | sed "s|^  $REMOTE/||")
     
     # Convert exclude list to array
-    IFS=',' read -ra EXCLUDE_ARRAY <<< "$EXCLUDE_BRANCHES"
+    if [ -n "$EXCLUDE_BRANCHES" ]; then
+        IFS=',' read -ra EXCLUDE_ARRAY <<< "$EXCLUDE_BRANCHES"
+    else
+        EXCLUDE_ARRAY=()
+    fi
+    
+    # Always exclude production branch
+    EXCLUDE_ARRAY+=("production")
     
     local deleted_count=0
     local skipped_count=0
