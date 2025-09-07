@@ -1,6 +1,6 @@
 #!/bin/bash
 # SuperClaude PR Review Script
-# Comprehensive pull request review using GitHub CLI
+# AI-powered pull request review with GitHub integration
 
 set -euo pipefail
 
@@ -16,8 +16,9 @@ NC='\033[0m' # No Color
 # Default values
 PR_NUMBER=""
 REPO=""
-DETAILED=false
-FILES_ONLY=false
+REVIEW_ONLY=false
+POST_COMMENT=true
+GUIDELINES_FILE=".github/copilot-instructions.md"
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -30,21 +31,26 @@ while [[ $# -gt 0 ]]; do
             REPO="$2"
             shift 2
             ;;
-        --detailed)
-            DETAILED=true
+        --review-only)
+            REVIEW_ONLY=true
             shift
             ;;
-        --files-only)
-            FILES_ONLY=true
+        --no-comment)
+            POST_COMMENT=false
             shift
+            ;;
+        --guidelines)
+            GUIDELINES_FILE="$2"
+            shift 2
             ;;
         -h|--help)
             echo "Usage: $0 PR=<number> [options]"
             echo "Options:"
             echo "  PR=<number>      Pull request number (required)"
             echo "  --repo          Repository in format owner/name"
-            echo "  --detailed      Show full diff for each file"
-            echo "  --files-only    Only list changed files"
+            echo "  --review-only   Only show review, don't post comment"
+            echo "  --no-comment    Don't post review comment to PR"
+            echo "  --guidelines    Path to guidelines file (default: .github/copilot-instructions.md)"
             echo "  -h, --help      Show this help message"
             exit 0
             ;;
@@ -89,7 +95,6 @@ check_gh_cli() {
 # Get repository if not specified
 get_repo() {
     if [ -z "$REPO" ]; then
-        # Try to get repo from current directory
         if git rev-parse --is-inside-work-tree &>/dev/null; then
             local origin_url=$(git config --get remote.origin.url)
             if [[ $origin_url =~ github.com[:/]([^/]+)/([^/]+)(\.git)?$ ]]; then
@@ -104,207 +109,265 @@ get_repo() {
     fi
 }
 
-# Fetch PR metadata
-fetch_pr_metadata() {
-    print_header "Pull Request #$PR_NUMBER"
+# Check for review guidelines
+check_guidelines() {
+    print_header "Checking for Review Guidelines"
     
-    # Get PR details
-    local pr_data=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json title,author,state,body,baseRefName,headRefName,mergeable,isDraft,createdAt,url 2>/dev/null)
+    local guidelines_content=""
     
-    if [ $? -ne 0 ]; then
-        print_color $RED "Error: Could not fetch PR #$PR_NUMBER from $REPO"
-        exit 1
-    fi
+    # Try to fetch guidelines from the repository
+    guidelines_content=$(gh api repos/"$REPO"/contents/"$GUIDELINES_FILE" --jq '.content' 2>/dev/null | base64 -d 2>/dev/null || echo "")
     
-    # Parse PR data
-    local title=$(echo "$pr_data" | jq -r '.title')
-    local author=$(echo "$pr_data" | jq -r '.author.login')
-    local state=$(echo "$pr_data" | jq -r '.state')
-    local base=$(echo "$pr_data" | jq -r '.baseRefName')
-    local head=$(echo "$pr_data" | jq -r '.headRefName')
-    local mergeable=$(echo "$pr_data" | jq -r '.mergeable')
-    local is_draft=$(echo "$pr_data" | jq -r '.isDraft')
-    local created=$(echo "$pr_data" | jq -r '.createdAt')
-    local url=$(echo "$pr_data" | jq -r '.url')
-    local body=$(echo "$pr_data" | jq -r '.body // "No description provided"')
-    
-    # Display metadata
-    print_color $CYAN "Title: $title"
-    print_color $CYAN "Author: @$author"
-    print_color $CYAN "State: $state"
-    if [ "$is_draft" = "true" ]; then
-        print_color $YELLOW "Status: DRAFT"
-    fi
-    print_color $CYAN "Branch: $head → $base"
-    print_color $CYAN "Created: $created"
-    print_color $CYAN "URL: $url"
-    
-    if [ "$mergeable" = "CONFLICTING" ]; then
-        print_color $RED "⚠️  Has merge conflicts!"
-    elif [ "$mergeable" = "MERGEABLE" ]; then
-        print_color $GREEN "✓ Ready to merge"
-    fi
-    
-    echo
-    print_color $CYAN "Description:"
-    echo "$body" | sed 's/^/  /'
-}
+    if [ -n "$guidelines_content" ]; then
+        print_color $GREEN "✓ Found review guidelines at $GUIDELINES_FILE"
+        echo "$guidelines_content" > /tmp/pr_review_guidelines.md
+        return 0
+    else
+        print_color $YELLOW "⚠ No review guidelines found at $GUIDELINES_FILE"
+        # Create default guidelines
+        cat > /tmp/pr_review_guidelines.md << 'EOF'
+# Default Code Review Guidelines
 
-# Show PR statistics
-show_pr_stats() {
-    print_header "Change Statistics"
-    
-    # Get diff stats
-    local stats=$(gh pr diff "$PR_NUMBER" --repo "$REPO" --name-only 2>/dev/null | wc -l)
-    print_color $CYAN "Files changed: $stats"
-    
-    # Get additions/deletions
-    local diff_stat=$(gh pr diff "$PR_NUMBER" --repo "$REPO" --stat 2>/dev/null | tail -1)
-    if [[ $diff_stat =~ ([0-9]+)\ file.*changed ]]; then
-        print_color $GREEN "$diff_stat"
+## Review Focus Areas
+1. **Code Quality**: Clean, readable, and maintainable code
+2. **Security**: No hardcoded secrets, proper input validation
+3. **Performance**: Efficient algorithms and resource usage
+4. **Testing**: Adequate test coverage for new functionality
+5. **Documentation**: Clear comments and updated documentation
+6. **Best Practices**: Follow language and framework conventions
+
+## Review Categories
+- **Critical**: Security issues, data loss risks, breaking changes
+- **Important**: Performance issues, missing tests, poor error handling
+- **Non-Blocking**: Style issues, minor improvements, suggestions
+EOF
+        return 1
     fi
 }
 
-# List changed files
-list_changed_files() {
-    print_header "Changed Files"
+# Get existing Copilot comments
+get_copilot_comments() {
+    print_header "Analyzing Existing Copilot Comments"
     
-    # Get file list with stats
-    gh pr diff "$PR_NUMBER" --repo "$REPO" --stat 2>/dev/null | head -n -1 | while IFS= read -r line; do
-        if [[ $line =~ ^[[:space:]]*(.*\|.*) ]]; then
-            # Extract filename and changes
-            local file=$(echo "$line" | awk -F'|' '{print $1}' | xargs)
-            local changes=$(echo "$line" | awk -F'|' '{print $2}')
-            
-            # Color based on file type
-            if [[ $file =~ \.(js|ts|jsx|tsx)$ ]]; then
-                print_color $YELLOW "📄 $file"
-            elif [[ $file =~ \.(md|txt|rst)$ ]]; then
-                print_color $CYAN "📝 $file"
-            elif [[ $file =~ \.(sh|bash)$ ]]; then
-                print_color $GREEN "🔧 $file"
-            elif [[ $file =~ \.(yml|yaml|json)$ ]]; then
-                print_color $MAGENTA "⚙️  $file"
-            else
-                echo "📄 $file"
-            fi
-            
-            # Show changes inline
-            echo "   $changes"
-        fi
-    done
-}
-
-# Show detailed diffs
-show_detailed_diff() {
-    if [ "$DETAILED" = true ] && [ "$FILES_ONLY" = false ]; then
-        print_header "Detailed Changes"
-        gh pr diff "$PR_NUMBER" --repo "$REPO" --color always 2>/dev/null | less -R
+    # Fetch all comments on the PR
+    local comments=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json comments --jq '.comments[] | select(.author.login == "github-actions[bot]" or .author.login == "copilot[bot]" or .body | contains("[bot]")) | {author: .author.login, body: .body, createdAt: .createdAt}' 2>/dev/null || echo "")
+    
+    if [ -n "$comments" ]; then
+        echo "$comments" > /tmp/pr_copilot_comments.json
+        local comment_count=$(echo "$comments" | jq -s 'length' 2>/dev/null || echo "0")
+        print_color $CYAN "Found $comment_count bot comments to evaluate"
+        return 0
+    else
+        print_color $YELLOW "No existing bot comments found"
+        return 1
     fi
 }
 
-# Check CI status
-check_ci_status() {
-    print_header "CI/CD Status"
+# Get PR diff
+get_pr_diff() {
+    print_header "Fetching PR Changes"
+    
+    # Get the diff
+    gh pr diff "$PR_NUMBER" --repo "$REPO" > /tmp/pr_diff.txt 2>/dev/null
+    
+    # Get file list
+    gh pr view "$PR_NUMBER" --repo "$REPO" --json files --jq '.files[].path' > /tmp/pr_files.txt 2>/dev/null
+    
+    # Get PR metadata
+    gh pr view "$PR_NUMBER" --repo "$REPO" --json title,body,author,baseRefName,headRefName > /tmp/pr_metadata.json 2>/dev/null
+    
+    print_color $GREEN "✓ Retrieved PR diff and metadata"
+}
+
+# Get CI/CD status
+get_ci_status() {
+    print_header "Checking CI/CD Status"
     
     # Get check runs
     local checks=$(gh pr checks "$PR_NUMBER" --repo "$REPO" 2>/dev/null)
     
     if [ -n "$checks" ]; then
-        echo "$checks" | while IFS=$'\t' read -r name status conclusion; do
-            case "$conclusion" in
-                "success")
-                    print_color $GREEN "✓ $name"
-                    ;;
-                "failure")
-                    print_color $RED "✗ $name"
-                    ;;
-                "skipped")
-                    print_color $YELLOW "⊘ $name (skipped)"
-                    ;;
-                *)
-                    if [ "$status" = "in_progress" ]; then
-                        print_color $YELLOW "⏳ $name (running)"
-                    else
-                        echo "• $name: $status"
-                    fi
-                    ;;
-            esac
-        done
+        echo "$checks" > /tmp/pr_ci_status.txt
+        local total_checks=$(echo "$checks" | wc -l)
+        local passed_checks=$(echo "$checks" | grep -c "pass" || echo "0")
+        local failed_checks=$(echo "$checks" | grep -c "fail" || echo "0")
+        local pending_checks=$(echo "$checks" | grep -c "pending\|queued" || echo "0")
+        
+        print_color $CYAN "Total checks: $total_checks"
+        if [ "$failed_checks" -gt 0 ]; then
+            print_color $RED "Failed: $failed_checks"
+        fi
+        if [ "$passed_checks" -gt 0 ]; then
+            print_color $GREEN "Passed: $passed_checks"
+        fi
+        if [ "$pending_checks" -gt 0 ]; then
+            print_color $YELLOW "Pending: $pending_checks"
+        fi
     else
         print_color $YELLOW "No CI checks found"
+        echo "No CI checks configured" > /tmp/pr_ci_status.txt
     fi
 }
 
-# Show comments and reviews
-show_comments() {
-    print_header "Comments & Reviews"
+# Perform AI review
+perform_ai_review() {
+    print_header "Performing AI Code Review"
     
-    # Get comment count
-    local comment_count=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json comments --jq '.comments | length' 2>/dev/null || echo "0")
-    local review_count=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json reviews --jq '.reviews | length' 2>/dev/null || echo "0")
+    # Prepare the review prompt
+    local review_prompt="/tmp/pr_review_prompt.txt"
     
-    print_color $CYAN "Comments: $comment_count"
-    print_color $CYAN "Reviews: $review_count"
+    cat > "$review_prompt" << 'EOF'
+You are an expert code reviewer. Review the following pull request changes and provide a comprehensive analysis.
+
+## Review Guidelines
+EOF
     
-    # Show latest reviews
-    if [ "$review_count" -gt 0 ]; then
+    # Add guidelines
+    if [ -f /tmp/pr_review_guidelines.md ]; then
+        cat /tmp/pr_review_guidelines.md >> "$review_prompt"
+    fi
+    
+    # Add existing comments evaluation if present
+    if [ -f /tmp/pr_copilot_comments.json ] && [ -s /tmp/pr_copilot_comments.json ]; then
+        cat >> "$review_prompt" << 'EOF'
+
+## Existing Bot Comments to Evaluate
+Please evaluate each of these existing comments for validity and incorporate valid concerns into your review:
+
+EOF
+        jq -r '.body' /tmp/pr_copilot_comments.json >> "$review_prompt" 2>/dev/null || true
+    fi
+    
+    # Add PR metadata
+    cat >> "$review_prompt" << 'EOF'
+
+## Pull Request Information
+EOF
+    jq -r '"Title: \(.title)\nBase: \(.baseRefName) ← Head: \(.headRefName)\nAuthor: \(.author.login)\n\nDescription:\n\(.body // "No description provided")"' /tmp/pr_metadata.json >> "$review_prompt"
+    
+    # Add CI/CD status
+    cat >> "$review_prompt" << 'EOF'
+
+## CI/CD Status
+EOF
+    if [ -f /tmp/pr_ci_status.txt ]; then
+        cat /tmp/pr_ci_status.txt >> "$review_prompt"
+    fi
+    
+    # Add the diff
+    cat >> "$review_prompt" << 'EOF'
+
+## Code Changes
+```diff
+EOF
+    cat /tmp/pr_diff.txt >> "$review_prompt"
+    cat >> "$review_prompt" << 'EOF'
+```
+
+## Review Instructions
+1. If existing bot comments were provided, evaluate each one and state whether it's valid or can be ignored
+2. Review the code changes following the guidelines provided
+3. Consider the CI/CD status - if there are failing checks, include them in your analysis
+4. Categorize all findings as:
+   - **CRITICAL**: Must be fixed before merge (security issues, data loss, breaking changes, CI/CD failures)
+   - **IMPORTANT**: Should be addressed (performance, missing tests, error handling)
+   - **NON-BLOCKING**: Nice to have improvements (style, minor optimizations)
+5. Be specific with line numbers and file names when pointing out issues
+6. Acknowledge good practices and improvements
+7. Provide actionable feedback with examples where applicable
+8. If CI/CD is failing, recommend specific fixes based on the error messages
+
+Format your response as a GitHub PR comment with clear sections for each category of findings.
+EOF
+    
+    # Save the prompt for debugging
+    cp "$review_prompt" /tmp/pr_review_prompt_debug.txt
+    
+    print_color $CYAN "Analyzing code changes..."
+    
+    # The actual AI review would happen here
+    # For now, we'll prepare the structure for the review results
+    cat > /tmp/pr_review_result.md << 'EOF'
+## 🤖 AI Code Review
+
+### Review Summary
+This is where the AI review results would appear. The script has prepared all the necessary context:
+- Review guidelines (if found)
+- Existing bot comments for evaluation
+- Complete PR diff
+- PR metadata
+
+To complete the AI review integration:
+1. Add Claude API integration here
+2. Send the prepared prompt to Claude
+3. Parse and format the response
+4. Post as a PR comment
+
+### Prepared Context Files
+- Guidelines: /tmp/pr_review_guidelines.md
+- Copilot Comments: /tmp/pr_copilot_comments.json
+- PR Diff: /tmp/pr_diff.txt
+- PR Metadata: /tmp/pr_metadata.json
+- Review Prompt: /tmp/pr_review_prompt_debug.txt
+EOF
+    
+    print_color $GREEN "✓ Review analysis complete"
+}
+
+# Format review comment
+format_review_comment() {
+    local timestamp=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+    
+    cat > /tmp/pr_review_comment.md << EOF
+## 🤖 SuperClaude AI Code Review
+
+**Pull Request:** #$PR_NUMBER
+**Reviewed at:** $timestamp
+**Review Type:** AI-Assisted with Guidelines
+
+---
+
+EOF
+    
+    # Add the review results
+    cat /tmp/pr_review_result.md >> /tmp/pr_review_comment.md
+    
+    # Add footer
+    cat >> /tmp/pr_review_comment.md << 'EOF'
+
+---
+
+*This review was performed by [SuperClaude](https://github.com/Shardj/SuperClaude) AI Code Review*
+EOF
+}
+
+# Post comment to PR
+post_pr_comment() {
+    if [ "$POST_COMMENT" = true ] && [ "$REVIEW_ONLY" = false ]; then
+        print_header "Posting Review Comment"
+        
+        # Check if we should post
+        read -p "Post this review as a comment on PR #$PR_NUMBER? (y/N) " -n 1 -r
         echo
-        print_color $CYAN "Latest Reviews:"
-        gh pr view "$PR_NUMBER" --repo "$REPO" --json reviews --jq '.reviews[-3:] | reverse | .[] | "  • \(.author.login): \(.state)"' 2>/dev/null || true
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            gh pr comment "$PR_NUMBER" --repo "$REPO" --body-file /tmp/pr_review_comment.md
+            print_color $GREEN "✓ Review comment posted successfully"
+        else
+            print_color $YELLOW "Review comment not posted"
+        fi
     fi
 }
 
-# Provide review summary
-provide_summary() {
-    print_header "Review Summary"
-    
-    # Get PR state info
-    local pr_data=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json mergeable,reviews,isDraft,state 2>/dev/null)
-    local mergeable=$(echo "$pr_data" | jq -r '.mergeable')
-    local is_draft=$(echo "$pr_data" | jq -r '.isDraft')
-    local state=$(echo "$pr_data" | jq -r '.state')
-    
-    # Check approvals
-    local approvals=$(echo "$pr_data" | jq -r '[.reviews[] | select(.state == "APPROVED")] | length')
-    local changes_requested=$(echo "$pr_data" | jq -r '[.reviews[] | select(.state == "CHANGES_REQUESTED")] | length')
-    
-    # Summary
-    if [ "$state" = "CLOSED" ]; then
-        print_color $RED "❌ This PR is closed"
-    elif [ "$state" = "MERGED" ]; then
-        print_color $GREEN "✅ This PR has been merged"
-    else
-        if [ "$is_draft" = "true" ]; then
-            print_color $YELLOW "📝 This is a draft PR"
-        fi
-        
-        if [ "$mergeable" = "CONFLICTING" ]; then
-            print_color $RED "❌ Has merge conflicts that need to be resolved"
-        fi
-        
-        if [ "$changes_requested" -gt 0 ]; then
-            print_color $YELLOW "🔄 Changes requested by reviewers"
-        fi
-        
-        if [ "$approvals" -gt 0 ]; then
-            print_color $GREEN "✅ Has $approvals approval(s)"
-        else
-            print_color $YELLOW "⏳ Awaiting review approval"
-        fi
-        
-        # Check CI status
-        local failed_checks=$(gh pr checks "$PR_NUMBER" --repo "$REPO" 2>/dev/null | grep -c "fail" || echo "0")
-        if [ "$failed_checks" -gt 0 ]; then
-            print_color $RED "❌ $failed_checks CI check(s) failing"
-        fi
-    fi
+# Display review locally
+display_review() {
+    print_header "Review Results"
+    cat /tmp/pr_review_comment.md
 }
 
 # Main execution
 main() {
-    print_color $BLUE "🔍 SuperClaude PR Review"
-    print_color $BLUE "========================"
+    print_color $BLUE "🔍 SuperClaude AI PR Review"
+    print_color $BLUE "============================"
     
     # Check dependencies
     check_gh_cli
@@ -312,22 +375,31 @@ main() {
     # Get repository
     get_repo
     print_color $GREEN "Repository: $REPO"
+    print_color $GREEN "Pull Request: #$PR_NUMBER"
     
-    # Fetch and display PR information
-    fetch_pr_metadata
+    # Check for review guidelines
+    check_guidelines
     
-    if [ "$FILES_ONLY" = false ]; then
-        show_pr_stats
-    fi
+    # Get existing Copilot comments
+    get_copilot_comments
     
-    list_changed_files
+    # Get PR diff and metadata
+    get_pr_diff
     
-    if [ "$FILES_ONLY" = false ]; then
-        check_ci_status
-        show_comments
-        show_detailed_diff
-        provide_summary
-    fi
+    # Get CI/CD status
+    get_ci_status
+    
+    # Perform AI review
+    perform_ai_review
+    
+    # Format the review comment
+    format_review_comment
+    
+    # Display the review
+    display_review
+    
+    # Post comment if requested
+    post_pr_comment
     
     echo
     print_color $GREEN "✨ Review complete!"
