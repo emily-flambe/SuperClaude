@@ -269,7 +269,7 @@ Persona system provides specialized AI behavior patterns optimized for specific 
 **Code Quality Metrics**:
 - **Complexity Score**: Cyclomatic complexity, cognitive complexity, nesting depth
 - **Maintainability Index**: Code readability, documentation coverage, consistency
-- **Technical Debt Ratio**: Estimated hours to fix issues vs. development time
+- **Technical Debt Ratio**: Amount of refactoring needed vs. development complexity
 - **Test Coverage**: Unit tests, integration tests, documentation examples
 
 **MCP Server Preferences**:

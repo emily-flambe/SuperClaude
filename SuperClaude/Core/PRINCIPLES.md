@@ -24,6 +24,16 @@
   - Error messages
   - ANYWHERE in the codebase
 
+### 3. NO TIME ESTIMATES OR TIMELINES
+- **NEVER** provide time estimates for implementations
+- **NEVER** suggest how long tasks will take
+- **NEVER** create implementation timelines
+- **NEVER** estimate completion dates
+- **NEVER** say things like "this will take X minutes/hours/days"
+- **NEVER** provide development time predictions
+- **FOCUS** on the work itself, not timing
+- **LET** the user determine their own schedule
+
 ## MANDATORY BEHAVIORS
 
 ### 1. OBJECTIVE DECISION MAKING

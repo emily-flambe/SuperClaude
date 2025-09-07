@@ -11,6 +11,8 @@ Simple actionable rules for Claude Code SuperClaude framework operation.
 - Run lint/typecheck before marking tasks complete
 - Use /spawn and /task for complex multi-session workflows
 - Maintain ≥90% context retention across operations
+- NEVER provide time estimates or implementation timelines
+- NEVER suggest development schedules or deadlines
 
 ### File Operation Security
 - Always use Read tool before Write or Edit operations
@@ -58,6 +60,9 @@ Simple actionable rules for Claude Code SuperClaude framework operation.
 ❌ Override safety protocols
 ❌ Make reactive codebase changes
 ❌ Mark complete without verification
+❌ Provide time estimates or timelines
+❌ Suggest implementation durations
+❌ Create development schedules
 
 ### Auto-Triggers
 - Wave mode: complexity ≥0.7 + multiple domains

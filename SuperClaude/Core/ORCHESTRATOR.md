@@ -46,7 +46,6 @@ simple:
     - straightforward queries
     - < 3 step workflows
   token_budget: 5K
-  time_estimate: < 5 min
 
 moderate:
   indicators:
@@ -55,7 +54,6 @@ moderate:
     - refactoring requests
     - 3-10 step workflows
   token_budget: 15K
-  time_estimate: 5-30 min
 
 complex:
   indicators:
@@ -64,7 +62,6 @@ complex:
     - performance optimization
     - > 10 step workflows
   token_budget: 30K+
-  time_estimate: > 30 min
 ```
 
 #### Domain Identification

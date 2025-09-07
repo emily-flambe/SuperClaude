@@ -28,7 +28,7 @@ Three primary modes for optimal performance:
 - **Capacity**: 3-20 tasks per session
 
 ### Layer 2: /task Command (Project Management)
-- **Scope**: Multi-session features (days to weeks)
+- **Scope**: Multi-session features for larger projects
 - **Structure**: Hierarchical (Epic → Story → Task)
 - **Persistence**: Cross-session state management
 
