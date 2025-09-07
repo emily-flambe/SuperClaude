@@ -1,7 +1,6 @@
 ---
-allowed-tools: [Bash(~/.claude/scripts/pr-review.sh:*)]
+allowed-tools: [Bash, Read, Grep, Glob, TodoWrite]
 description: "AI-powered pull request review with GitHub integration"
-script-based: true
 ---
 
 # /sc:pr-review - AI-Powered Pull Request Review
@@ -16,14 +15,13 @@ Perform an intelligent, AI-powered review of a GitHub pull request that:
 
 ## Usage
 ```
-/sc:pr-review PR=<number> [--repo owner/name] [--review-only] [--no-comment] [--guidelines path/to/file.md]
+/sc:pr-review PR=<number> [--repo owner/name] [--no-comment] [--guidelines path/to/file.md]
 ```
 
 ## Arguments
 - `PR=<number>` - The pull request number to review (required)
 - `--repo` - Repository in format owner/name (default: uses current repo)
-- `--review-only` - Only display review locally, don't post to GitHub
-- `--no-comment` - Perform review but don't post comment
+- `--no-comment` - Perform review but don't post comment to GitHub (default: post comment)
 - `--guidelines` - Custom path to guidelines file (default: .github/copilot-instructions.md)
 
 ## Features
@@ -63,7 +61,7 @@ Perform an intelligent, AI-powered review of a GitHub pull request that:
 3. Reviews code changes comprehensively
 4. Checks CI/CD status and incorporates results
 5. Generates categorized findings with clear TODOs
-6. Posts professional review comment to PR
+6. Posts professional review comment directly to PR (default behavior)
 
 ## Example Output
 ```
@@ -107,6 +105,19 @@ This PR introduces good functionality but has critical security issues that must
 ```
 
 ## Execution
-This command runs a deterministic bash script that orchestrates the AI review:
+This command performs the following steps:
 
-!~/.claude/scripts/pr-review.sh $ARGUMENTS
+1. **Fetch PR Information**: Use `gh pr view` to get PR metadata, files, and diff
+2. **Check Guidelines**: Look for `.github/copilot-instructions.md` or use defaults
+3. **Analyze CI/CD**: Check `gh pr checks` for test/build status
+4. **Review Changes**: Analyze the diff for issues, categorize by severity
+5. **Generate Review**: Create formatted review with findings
+6. **Post Comment**: Use `gh pr comment` to post review to PR (unless `--no-comment`)
+
+## Default Behavior
+**By default, this command will post the review as a comment on the PR.** Use `--no-comment` if you only want to see the review locally without posting.
+
+## Claude Code Integration
+- Uses Bash to execute GitHub CLI commands
+- Leverages native code analysis capabilities
+- Posts results directly to GitHub
