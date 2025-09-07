@@ -113,6 +113,38 @@ is_branch_merged() {
     git merge-base --is-ancestor "$branch" "$MAIN_BRANCH" 2>/dev/null
 }
 
+# Function to get exclude branch array
+get_exclude_array() {
+    local exclude_array=()
+    
+    # Convert exclude list to array
+    if [ -n "$EXCLUDE_BRANCHES" ]; then
+        IFS=',' read -ra exclude_array <<< "$EXCLUDE_BRANCHES"
+    fi
+    
+    # Always exclude production branch
+    exclude_array+=("production")
+    
+    # Return array via nameref (bash 4.3+)
+    local -n arr=$1
+    arr=("${exclude_array[@]}")
+}
+
+# Function to check if branch should be excluded
+is_branch_excluded() {
+    local branch=$1
+    local exclude_array=()
+    get_exclude_array exclude_array
+    
+    for exclude in "${exclude_array[@]}"; do
+        if [ "$branch" = "$exclude" ]; then
+            return 0  # true - should be excluded
+        fi
+    done
+    
+    return 1  # false - not excluded
+}
+
 # Function to check if a branch has unpushed commits
 has_unpushed_commits() {
     local branch=$1
@@ -134,30 +166,12 @@ delete_local_branches() {
     # Get list of local branches (excluding main/master and current branch)
     local branches=$(git branch | grep -v "^\*" | grep -v "^  $MAIN_BRANCH$" | grep -v "^  master$" | sed 's/^  //')
     
-    # Convert exclude list to array
-    if [ -n "$EXCLUDE_BRANCHES" ]; then
-        IFS=',' read -ra EXCLUDE_ARRAY <<< "$EXCLUDE_BRANCHES"
-    else
-        EXCLUDE_ARRAY=()
-    fi
-    
-    # Always exclude production branch
-    EXCLUDE_ARRAY+=("production")
-    
     local deleted_count=0
     local skipped_count=0
     
     for branch in $branches; do
         # Skip if in exclude list
-        local skip=false
-        for exclude in "${EXCLUDE_ARRAY[@]}"; do
-            if [ "$branch" = "$exclude" ]; then
-                skip=true
-                break
-            fi
-        done
-        
-        if [ "$skip" = true ]; then
+        if is_branch_excluded "$branch"; then
             print_color $YELLOW "⏭️  Skipping excluded branch: $branch"
             ((skipped_count++))
             continue
@@ -237,30 +251,12 @@ delete_remote_branches() {
     # Get list of remote branches
     local branches=$(git branch -r | grep "^  $REMOTE/" | grep -v "$REMOTE/HEAD" | grep -v "$REMOTE/$MAIN_BRANCH" | grep -v "$REMOTE/master" | sed "s|^  $REMOTE/||")
     
-    # Convert exclude list to array
-    if [ -n "$EXCLUDE_BRANCHES" ]; then
-        IFS=',' read -ra EXCLUDE_ARRAY <<< "$EXCLUDE_BRANCHES"
-    else
-        EXCLUDE_ARRAY=()
-    fi
-    
-    # Always exclude production branch
-    EXCLUDE_ARRAY+=("production")
-    
     local deleted_count=0
     local skipped_count=0
     
     for branch in $branches; do
         # Skip if in exclude list
-        local skip=false
-        for exclude in "${EXCLUDE_ARRAY[@]}"; do
-            if [ "$branch" = "$exclude" ]; then
-                skip=true
-                break
-            fi
-        done
-        
-        if [ "$skip" = true ]; then
+        if is_branch_excluded "$branch"; then
             print_color $YELLOW "⏭️  Skipping excluded remote branch: $branch"
             ((skipped_count++))
             continue
