@@ -17,6 +17,7 @@ FORCE=false
 EXCLUDE_BRANCHES=""
 REMOTE="origin"
 MAIN_BRANCH=""
+EXCLUDE_ARRAY=()
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -115,28 +116,27 @@ is_branch_merged() {
 
 # Function to get exclude branch array
 get_exclude_array() {
-    local exclude_array=()
-    
     # Convert exclude list to array
     if [ -n "$EXCLUDE_BRANCHES" ]; then
-        IFS=',' read -ra exclude_array <<< "$EXCLUDE_BRANCHES"
+        IFS=',' read -ra EXCLUDE_ARRAY <<< "$EXCLUDE_BRANCHES"
+    else
+        EXCLUDE_ARRAY=()
     fi
     
     # Always exclude production branch
-    exclude_array+=("production")
-    
-    # Return array via nameref (bash 4.3+)
-    local -n arr=$1
-    arr=("${exclude_array[@]}")
+    EXCLUDE_ARRAY+=("production")
 }
 
 # Function to check if branch should be excluded
 is_branch_excluded() {
     local branch=$1
-    local exclude_array=()
-    get_exclude_array exclude_array
     
-    for exclude in "${exclude_array[@]}"; do
+    # Initialize exclude array if not already done
+    if [ ${#EXCLUDE_ARRAY[@]} -eq 0 ]; then
+        get_exclude_array
+    fi
+    
+    for exclude in "${EXCLUDE_ARRAY[@]}"; do
         if [ "$branch" = "$exclude" ]; then
             return 0  # true - should be excluded
         fi
