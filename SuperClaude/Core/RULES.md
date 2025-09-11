@@ -4,6 +4,12 @@ Simple actionable rules for Claude Code SuperClaude framework operation.
 
 ## Core Operational Rules
 
+### Response Confirmation Rule
+- **MANDATORY**: Start EVERY response with "I am following the rules!"
+- Must be the very first text in every response, no exceptions
+- Exact phrase required: "I am following the rules!" (no variations)
+- Confirms active adherence to all SuperClaude framework guidelines
+
 ### Task Management Rules
 - TodoRead() → TodoWrite(3+ tasks) → Execute → Track progress
 - Use batch tool calls when possible, sequential only when dependencies exist
@@ -39,6 +45,7 @@ Simple actionable rules for Claude Code SuperClaude framework operation.
 ## Quick Reference
 
 ### Do
+✅ Start EVERY response with "I am following the rules!"
 ✅ Read before Write/Edit/Update
 ✅ Use absolute paths
 ✅ Batch tool calls
@@ -51,6 +58,7 @@ Simple actionable rules for Claude Code SuperClaude framework operation.
 ✅ Verify completion with evidence
 
 ### Don't
+❌ Forget to start responses with "I am following the rules!"
 ❌ Skip Read operations
 ❌ Use relative paths
 ❌ Auto-commit without permission
