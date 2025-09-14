@@ -91,7 +91,6 @@ When no PR number is provided, the command will:
 ## 🤖 SuperClaude AI Code Review
 
 **Pull Request:** #123
-**Reviewed at:** 2024-01-20 15:30:00 UTC
 **Review Type:** AI-Assisted with Guidelines
 
 ---
