@@ -2,245 +2,348 @@
 
 ## Overview
 
-The `/prompt` command provides an intelligent prompting system for Claude Code, offering structured prompt templates, context management, and persona-aware prompt optimization.
+The `/prompt` command is an intelligent translator that converts casual user requests into optimized Claude Code prompts using scaffolding best practices. It shows you the transformed prompt before executing it, so you can see exactly what's being submitted.
 
 ## Command Syntax
 
 ```bash
-/prompt [operation] [template] [flags]
+/prompt [user's casual request]
 ```
 
-## Core Operations
+## Execution Flow
 
-### 1. Generate Prompts
-```bash
-/prompt generate [type] --context [domain]
+1. **Input**: Receive user's casual request
+2. **Transform**: Apply scaffolding and optimization
+3. **Display**: Show the scaffolded prompt that will be executed
+4. **Execute**: Submit the optimized prompt to Claude Code
+
+The command will display:
 ```
-- **Types**: feature, debug, refactor, review, test, document
-- **Context**: Automatically includes relevant project context
-- **Output**: Optimized prompt with context, constraints, and expected outcomes
+=== ORIGINAL REQUEST ===
+[your casual input]
 
-### 2. Template Management
-```bash
-/prompt template [action] [name]
-```
-- **Actions**: create, list, apply, edit, delete
-- **Templates**: Reusable prompt patterns for common tasks
-- **Customization**: Domain-specific variables and placeholders
+=== SCAFFOLDED PROMPT (EXECUTING) ===
+[the optimized prompt that will be submitted]
 
-### 3. Context Injection
-```bash
-/prompt context [scope] --include [elements]
-```
-- **Scope**: file, module, project, system
-- **Elements**: dependencies, tests, documentation, history
-- **Smart Selection**: Auto-includes relevant context based on task
-
-### 4. Persona-Optimized Prompts
-```bash
-/prompt with-persona [persona] [task]
-```
-- **Personas**: architect, frontend, backend, security, qa, etc.
-- **Optimization**: Tailors prompt to persona's expertise and priorities
-- **Auto-Selection**: Suggests best persona based on task type
-
-## Prompt Templates
-
-### Feature Implementation
-```yaml
-template: feature_implementation
-variables:
-  - feature_name: Required feature identifier
-  - requirements: Functional requirements
-  - constraints: Technical constraints
-  - acceptance_criteria: Success metrics
-context:
-  - existing_patterns: Similar implementations
-  - dependencies: Required modules
-  - test_requirements: Coverage expectations
+=== EXECUTING NOW ===
+[Claude begins work]
 ```
 
-### Bug Investigation
-```yaml
-template: bug_investigation
-variables:
-  - symptoms: Observable issues
-  - reproduction_steps: How to reproduce
-  - expected_behavior: What should happen
-  - actual_behavior: What actually happens
-context:
-  - error_logs: Recent error messages
-  - recent_changes: Git history
-  - related_tests: Test failures
+## Core Scaffolding Principles
+
+### 1. Structured Prompt Template
+Every optimized prompt follows this scaffolding pattern:
+
+```
+<context>
+[Current state and relevant background]
+</context>
+
+<objective>
+[Clear, specific goal statement]
+</objective>
+
+<constraints>
+[Technical requirements and boundaries]
+</constraints>
+
+<steps>
+1. [Explicit action]
+2. [Explicit action]
+3. [Explicit action]
+</steps>
+
+<validation>
+[Success criteria and verification steps]
+</validation>
 ```
 
-### Code Review
-```yaml
-template: code_review
-variables:
-  - review_focus: security|performance|quality|architecture
-  - severity_level: critical|high|medium|low
-  - review_depth: surface|standard|deep
-context:
-  - pr_changes: Modified files
-  - test_coverage: Coverage reports
-  - standards: Coding standards
+### 2. Defensive Prompting
+- Wraps user input in guardrails
+- Adds explicit boundaries and constraints
+- Specifies acceptable/unacceptable behaviors
+- Includes error handling instructions
+
+### 3. Layered Instructions
+Combines multiple instruction types:
+- **Role Assignment**: "Acting as a senior developer..."
+- **Thinking Scaffold**: "First analyze, then plan, then implement..."
+- **Format Specification**: "Output as structured steps with validation..."
+
+## Translation Examples
+
+### Example 1: Feature Implementation
+**User Input:**
+```
+/prompt add dark mode
 ```
 
-## Intelligent Features
-
-### 1. Context-Aware Enhancement
-- **Auto-Context**: Automatically includes relevant files and dependencies
-- **Smart Boundaries**: Determines optimal context scope
-- **History Integration**: Includes relevant git history and past decisions
-- **Relationship Mapping**: Identifies and includes related components
-
-### 2. Constraint Specification
-- **Technical Constraints**: Framework versions, compatibility requirements
-- **Business Constraints**: Performance budgets, deadlines, regulations
-- **Quality Constraints**: Test coverage, code quality metrics
-- **Security Constraints**: Compliance requirements, vulnerability limits
-
-### 3. Output Formatting
-- **Structured Responses**: Define expected response format
-- **Validation Criteria**: Specify how to validate the response
-- **Example Outputs**: Provide sample expected outputs
-- **Error Handling**: Define error response patterns
-
-## Advanced Usage
-
-### Multi-Stage Prompting
-```bash
-/prompt chain [stage1] -> [stage2] -> [stage3]
+**Display Before Execution:**
 ```
-- **Sequential Processing**: Each stage builds on previous
-- **Context Propagation**: Results flow between stages
-- **Conditional Branches**: Different paths based on outcomes
-- **Rollback Support**: Revert to previous stages if needed
+=== ORIGINAL REQUEST ===
+add dark mode
 
-### Prompt Optimization
-```bash
-/prompt optimize [existing_prompt] --for [goal]
-```
-- **Goals**: clarity, specificity, brevity, completeness
-- **Analysis**: Identifies ambiguities and gaps
-- **Enhancement**: Suggests improvements
-- **Validation**: Checks against best practices
+=== SCAFFOLDED PROMPT (EXECUTING) ===
+<context>
+Project uses [detected framework]. Current theming located in [theme files].
+No existing dark mode implementation found.
+</context>
 
-### Batch Prompting
-```bash
-/prompt batch [template] --items [list]
-```
-- **Parallel Processing**: Generate multiple prompts efficiently
-- **Variable Substitution**: Apply template to multiple items
-- **Consistency**: Ensures uniform approach across items
-- **Result Aggregation**: Combines outputs intelligently
+<objective>
+Implement a complete dark mode feature with theme switching capability
+</objective>
 
-## Integration with SuperClaude
+<constraints>
+- Preserve existing light theme functionality
+- Use CSS variables for theme values
+- Ensure accessibility (WCAG AA contrast ratios)
+- Support system preference detection
+- Persist user preference
+</constraints>
 
-### Persona Integration
-- **Auto-Activation**: Suggests relevant personas based on prompt content
-- **Persona Optimization**: Adjusts language and focus for selected persona
-- **Cross-Persona**: Enables multi-persona collaboration prompts
+<steps>
+1. Analyze current theme implementation and color usage
+2. Create dark theme color palette with proper contrast
+3. Implement CSS variable system for theme switching
+4. Add theme toggle component with accessibility features
+5. Implement preference persistence (localStorage + system)
+6. Update all components to use theme variables
+7. Test across different screen sizes and browsers
+</steps>
 
-### MCP Server Integration
-- **Context7**: Includes library documentation in prompts
-- **Sequential**: Structures complex multi-step prompts
-- **Magic**: Enhances UI/component generation prompts
-- **Playwright**: Adds test context to prompts
+<validation>
+✓ Toggle switches between themes without flash
+✓ User preference persists across sessions
+✓ Respects system dark mode preference
+✓ All text meets WCAG AA contrast requirements
+✓ No hardcoded colors remain
+</validation>
 
-### Flag Support
-- `--think`: Adds analytical depth to prompts
-- `--validate`: Includes validation criteria
-- `--uc`: Generates compressed prompts
-- `--persona-[name]`: Optimizes for specific persona
-
-## Best Practices
-
-### 1. Prompt Structure
-- **Clear Objective**: State the goal explicitly
-- **Specific Context**: Include relevant background
-- **Constraints**: Define boundaries and limitations
-- **Success Criteria**: Specify expected outcomes
-
-### 2. Context Management
-- **Minimal Necessary**: Include only relevant context
-- **Structured Format**: Organize context logically
-- **Fresh Context**: Update stale information
-- **Privacy Aware**: Exclude sensitive data
-
-### 3. Template Design
-- **Reusable Patterns**: Create templates for repeated tasks
-- **Variable Placeholders**: Use clear, descriptive variables
-- **Documentation**: Document template purpose and usage
-- **Version Control**: Track template changes
-
-## Examples
-
-### Example 1: Feature Implementation Prompt
-```bash
-/prompt generate feature --name "user-authentication" --context security
+=== EXECUTING NOW ===
 ```
 
-### Example 2: Debug Investigation
-```bash
-/prompt generate debug --symptoms "API timeout" --include logs,traces
+### Example 2: Bug Investigation
+**User Input:**
+```
+/prompt why is it slow
 ```
 
-### Example 3: Code Review Request
-```bash
-/prompt with-persona critic review --focus security --depth deep
+**Display Before Execution:**
+```
+=== ORIGINAL REQUEST ===
+why is it slow
+
+=== SCAFFOLDED PROMPT (EXECUTING) ===
+<context>
+Performance issue reported. No specific component identified.
+Need systematic investigation of potential bottlenecks.
+</context>
+
+<objective>
+Identify and resolve performance bottlenecks causing slowness
+</objective>
+
+<constraints>
+- Measure before optimizing
+- Preserve functionality
+- Document findings
+- Focus on biggest impact items first
+</constraints>
+
+<steps>
+1. Profile application performance using browser DevTools
+2. Identify slow operations (>100ms blocking time)
+3. Check for:
+   - Unnecessary re-renders (React DevTools)
+   - Large bundle sizes (webpack-bundle-analyzer)
+   - Slow API calls (Network tab)
+   - Memory leaks (Memory profiler)
+   - Inefficient queries (Database logs)
+4. Document top 3 bottlenecks with metrics
+5. Implement fixes starting with highest impact
+6. Measure improvement after each fix
+7. Add performance monitoring for regression prevention
+</steps>
+
+<validation>
+✓ Performance metrics documented before/after
+✓ Specific bottlenecks identified with data
+✓ Measurable improvement achieved
+✓ No functionality broken
+✓ Monitoring in place
+</validation>
+
+=== EXECUTING NOW ===
 ```
 
-### Example 4: Documentation Generation
-```bash
-/prompt template apply technical-doc --component "AuthService"
+### Example 3: Code Refactoring
+**User Input:**
+```
+/prompt refactor this
 ```
 
-### Example 5: Multi-Stage Refactoring
-```bash
-/prompt chain analyze -> plan -> implement --target "legacy-module"
+**Display Before Execution:**
+```
+=== ORIGINAL REQUEST ===
+refactor this
+
+=== SCAFFOLDED PROMPT (EXECUTING) ===
+<context>
+Current file/module: [detected from context]
+Code complexity metrics: [calculated]
+Test coverage: [measured]
+</context>
+
+<objective>
+Refactor code for improved maintainability while preserving behavior
+</objective>
+
+<constraints>
+- All existing tests must pass
+- No breaking changes to public APIs
+- Follow project style guide
+- Maintain or improve performance
+</constraints>
+
+<steps>
+1. Run existing tests to establish baseline
+2. Identify refactoring opportunities:
+   - Extract duplicate code (DRY)
+   - Simplify complex conditionals
+   - Extract methods/functions (SRP)
+   - Improve naming clarity
+   - Add type definitions
+3. Refactor incrementally with test verification
+4. Add missing test coverage for edge cases
+5. Update documentation and comments
+6. Run linter and formatter
+7. Verify no performance regression
+</steps>
+
+<validation>
+✓ All tests passing
+✓ Code coverage maintained/improved
+✓ Cyclomatic complexity reduced
+✓ No linter warnings
+✓ Performance benchmarks stable
+</validation>
+
+=== EXECUTING NOW ===
 ```
 
-## Error Handling
+## Optimization Strategies
 
-### Common Issues
-- **Insufficient Context**: Prompt requests more context
-- **Ambiguous Requirements**: Prompt asks for clarification
-- **Conflicting Constraints**: Prompt identifies conflicts
-- **Missing Dependencies**: Prompt lists requirements
+### 1. Context Enrichment
+Automatically adds:
+- Current file/directory context
+- Detected framework/language
+- Recent git changes
+- Related file dependencies
+- Existing patterns in codebase
 
-### Recovery Strategies
-- **Context Expansion**: Automatically add related files
-- **Clarification Prompts**: Generate follow-up questions
-- **Constraint Resolution**: Suggest compromise solutions
-- **Dependency Resolution**: Identify and include dependencies
+### 2. Explicit Over Implicit
+Transforms vague instructions into specific actions:
+- "make it better" → specific improvements with metrics
+- "fix it" → systematic debugging with root cause analysis
+- "add feature" → complete implementation with tests
 
-## Performance Optimization
+### 3. Success Scaffolding
+Every prompt includes:
+- Clear success criteria
+- Step-by-step verification
+- Rollback considerations
+- Testing requirements
+- Documentation updates
 
-### Token Efficiency
-- **Smart Truncation**: Remove redundant context
-- **Compression**: Use abbreviated formats when appropriate
-- **Caching**: Reuse computed context
-- **Batching**: Combine related prompts
+## Advanced Features
 
-### Quality Metrics
-- **Clarity Score**: Measures prompt clarity
-- **Completeness**: Checks for missing elements
-- **Specificity**: Evaluates precision
-- **Efficiency**: Token usage optimization
+### Multi-Phase Execution
+Complex tasks are broken into phases:
 
-## Auto-Activation Patterns
+```
+### Phase 1: Investigation
+[Analysis and planning steps]
 
-The prompt command activates automatically when:
-- User asks "how should I prompt for..."
-- Complex tasks need structured prompting
-- Multi-step operations require orchestration
-- Context gathering is needed for effective prompting
+### Phase 2: Implementation
+[Core development steps]
 
-## Quality Standards
+### Phase 3: Validation
+[Testing and verification steps]
 
-- **Clarity**: Prompts must be unambiguous
-- **Completeness**: Include all necessary context
-- **Efficiency**: Optimize token usage
-- **Reproducibility**: Consistent results from same inputs
+### Phase 4: Finalization
+[Documentation and cleanup steps]
+```
+
+### Adaptive Scaffolding
+Adjusts based on task type:
+- **Frontend**: Emphasizes visual, UX, accessibility
+- **Backend**: Focuses on data, performance, security
+- **DevOps**: Includes automation, monitoring, deployment
+- **Debug**: Structures systematic investigation
+
+### Safety Rails
+Includes protective measures:
+- "Do not delete without backup"
+- "Verify before proceeding"
+- "Test in isolation first"
+- "Check breaking changes"
+
+## Integration Patterns
+
+### Automatic Enhancement
+The command automatically:
+- Detects project type and applies relevant patterns
+- Includes framework-specific best practices
+- Adds appropriate testing strategies
+- Incorporates security considerations
+
+### Smart Defaults
+When not specified, includes:
+- Error handling
+- Input validation
+- Basic tests
+- Documentation updates
+- Performance considerations
+
+### Progressive Disclosure
+Starts with essential steps, then:
+- Adds optimization if needed
+- Includes edge cases
+- Suggests follow-up improvements
+
+## Best Practices Applied
+
+### Clear Structure
+- Uses XML-like tags for organization
+- Groups related instructions
+- Provides explicit examples
+- Uses consistent formatting
+
+### Specific Instructions
+- Replaces vague terms with measurable criteria
+- Includes exact file paths when known
+- Specifies tool usage
+- Defines clear outputs
+
+### Thinking Scaffolds
+- "First analyze..."
+- "Then plan..."
+- "Next implement..."
+- "Finally validate..."
+
+## Usage Guidelines
+
+1. **Be Natural**: Write as you normally would - scaffolding is automatic
+2. **Review Output**: The scaffolded prompt is shown before execution
+3. **Trust the Process**: The command adds necessary technical structure
+4. **Provide Context**: Include any specific requirements you have
+
+## Quality Assurance
+
+Every scaffolded prompt ensures:
+- **Clarity**: Unambiguous instructions
+- **Completeness**: All necessary steps included
+- **Safety**: Protective measures in place
+- **Verifiability**: Clear success criteria
+- **Efficiency**: Optimized for first-attempt success
+- **Transparency**: You see exactly what's being submitted
