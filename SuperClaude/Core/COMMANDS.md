@@ -73,6 +73,21 @@ performance-profile: "standard"
 - **Tool Orchestration**: [Read, Write, Edit, MultiEdit, Bash, Glob, TodoWrite, Task]
 - **Arguments**: `[feature-description]`, `--type component|api|service|feature`, `--framework <name>`, `--<flags>`
 
+**`/prompt [request]`**
+```yaml
+---
+command: "/prompt"
+category: "Development & Implementation"
+purpose: "Prompt optimization and scaffolding translator"
+performance-profile: "optimization"
+---
+```
+- **Auto-Persona**: Context-aware based on request type
+- **MCP Integration**: Sequential (scaffolding), Context7 (best practices)
+- **Tool Orchestration**: [Read, Grep, TodoWrite]
+- **Arguments**: `[casual-request]`
+- **Special Feature**: Translates casual requests into scaffolded prompts and executes immediately
+
 ### Documentation
 
 **`/document [target] [flags]`**
@@ -160,7 +175,7 @@ complex: "Resource-intensive with comprehensive analysis"
 
 ### Command Categories
 - **Analysis**: analyze, troubleshoot
-- **Development**: implement
+- **Development**: implement, prompt
 - **Documentation**: document, readme
 - **Maintenance**: cleanup, git-cleanup
 - **Review**: pr-review
