@@ -115,8 +115,6 @@ performance-profile: "optimization"
 
 **`/document [target] [flags]`** - Documentation generation | Auto-Persona: Scribe, Mentor | MCP: Context7, Sequential
 
-**`/estimate [target] [flags]`** - Evidence-based estimation | Auto-Persona: Analyzer, Architect | MCP: Sequential, Context7
-
 **`/task [operation] [flags]`** - Long-term project management | Auto-Persona: Architect, Analyzer | MCP: Sequential
 
 **`/test [type] [flags]`** - Testing workflows | Auto-Persona: QA | MCP: Playwright, Sequential
@@ -125,17 +123,17 @@ performance-profile: "optimization"
 
 **`/design [domain] [flags]`** - Design orchestration | Auto-Persona: Architect, Frontend | MCP: Magic, Sequential, Context7
 
+**`/prompt [operation] [template] [flags]`** - Intelligent prompting system | Auto-Persona: Context-aware | MCP: Sequential, Context7
+
 ### Meta & Orchestration Commands
 
 **`/index [query] [flags]`** - Command catalog browsing | Auto-Persona: Mentor, Analyzer | MCP: Sequential
 
 **`/load [path] [flags]`** - Project context loading | Auto-Persona: Analyzer, Architect, Scribe | MCP: All servers
 
-**`/readme [flags]`** - Project initialization analysis and AI behavior guidelines discovery | Auto-Persona: Analyzer, Mentor | MCP: Sequential
+**`/spawn [mode] [flags]`** - Task orchestration | Auto-Persona: Analyzer, Architect, DevOps | MCP: All servers
 
 **Iterative Operations** - Use `--loop` flag with improvement commands for iterative refinement
-
-**`/spawn [mode] [flags]`** - Task orchestration | Auto-Persona: Analyzer, Architect, DevOps | MCP: All servers
 
 ## Command Execution Matrix
 
@@ -148,14 +146,14 @@ complex: "Resource-intensive with comprehensive analysis"
 
 ### Command Categories
 - **Development**: build, implement, design
-- **Planning**: workflow, estimate, task
+- **Planning**: task
 - **Analysis**: analyze, troubleshoot, explain
 - **Quality**: improve, cleanup
 - **Testing**: test
-- **Documentation**: document
+- **Documentation**: document, prompt
 - **Version-Control**: git
 - **Meta**: index, load, spawn
 
 ### Wave-Enabled Commands
-7 commands: `/analyze`, `/build`, `/design`, `/implement`, `/improve`, `/task`, `/workflow`
+6 commands: `/analyze`, `/build`, `/design`, `/implement`, `/improve`, `/task`
 
