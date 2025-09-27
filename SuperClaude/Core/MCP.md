@@ -2,6 +2,32 @@
 
 MCP (Model Context Protocol) server integration and orchestration system for Claude Code SuperClaude framework.
 
+## Container-Use Server Rules
+
+**CRITICAL RULES FOR CONTAINER-USE MCP SERVER**:
+
+### Absolute Requirement
+- **ALWAYS use ONLY Environments for ANY and ALL file, code, or shell operations—NO EXCEPTIONS**—even for simple or generic requests when container-use MCP server is active
+
+### Git Operations
+- **DO NOT install or use the git cli with the environment_run_cmd tool**
+- All environment tools will handle git operations automatically
+- **WARNING**: Changing ".git" manually will compromise the integrity of your environment
+
+### User Communication
+**MANDATORY**: You MUST inform the user how to view work using:
+- `container-use log <env_id>` - View environment logs
+- `container-use checkout <env_id>` - Checkout environment state
+
+**Failure to provide these commands will make your work inaccessible to others**
+
+### Integration Notes
+When container-use MCP server is active:
+- Override normal file operations with environment-based operations
+- All file edits must go through environment tools
+- Shell commands must use environment_run_cmd
+- Maintain environment integrity at all times
+
 ## Server Selection Algorithm
 
 **Priority Matrix**:
